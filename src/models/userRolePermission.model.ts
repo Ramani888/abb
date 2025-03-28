@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const env = process.env;
 
-const CustomerSchema = new Schema({
+const UserRolePermissionSchema = new Schema({
     ownerId: {
         type: String,
         required: true,
@@ -11,27 +11,15 @@ const CustomerSchema = new Schema({
         type: String,
         required: true,
     },
-    name: {
+    roleId: {
         type: String,
         required: true,
     },
-    address: {
+    permissionId: {
         type: String,
         required: true,
-    },
-    number: {
-        type: Number,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    customerType: {
-        type: String,
-        required: true,
-    },
+    }
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');
-export const Customer = dbConnection.model('Customer', CustomerSchema, 'Customer');
+export const UserRolePermission = dbConnection.model('UserRolePermission', UserRolePermissionSchema, 'UserRolePermission');

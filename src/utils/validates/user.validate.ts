@@ -14,3 +14,11 @@ export const loginValidation = {
     number: 'required|numeric',
     password: 'required|string'
 }
+
+export const userInsertValidation = {
+    ownerId: 'required|string',
+    name: 'required|string',
+    email: 'required|email',
+    number: 'required|numeric',
+    roleId: 'required|string'
+}

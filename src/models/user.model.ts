@@ -2,20 +2,12 @@ import mongoose, { Schema } from "mongoose";
 
 const env = process.env;
 
-const CustomerSchema = new Schema({
+const UserSchema = new Schema({
     ownerId: {
         type: String,
         required: true,
     },
-    userId: {
-        type: String,
-        required: true,
-    },
     name: {
-        type: String,
-        required: true,
-    },
-    address: {
         type: String,
         required: true,
     },
@@ -27,11 +19,7 @@ const CustomerSchema = new Schema({
         type: String,
         required: true,
     },
-    customerType: {
-        type: String,
-        required: true,
-    },
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');
-export const Customer = dbConnection.model('Customer', CustomerSchema, 'Customer');
+export const User = dbConnection.model('User', UserSchema, 'User');

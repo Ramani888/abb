@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { getOwnerByNumber, registerData } from "../services/user.service";
+import { getOwnerByNumber, getUserByNumberAndOwnerId, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData } from "../services/user.service";
 import { comparePassword, encryptPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 const env = process.env;
@@ -72,5 +72,25 @@ export const login = async (req: AuthorizedRequest, res: Response) => {
     } catch (error) {
         console.error('Error logging in:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const insertUser = async (req: AuthorizedRequest, res: Response) => {
+    try {
+        const bodyData = req.body;
+
+        const existingOwner = await getUserByNumberAndOwnerId(bodyData?.ownerId, bodyData?.number);
+        if (existingOwner) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register.' });
+
+        const user = await insertUserData(bodyData);
+        await insertUserRoleData(user?._id?.toString(), bodyData?.roleId, bodyData?.ownerId);
+        bodyData?.permissionIds?.map(async (permissionId: string) => {
+            await insertUserRolePermissionData(user?._id?.toString(), bodyData?.roleId, bodyData?.ownerId, permissionId);
+        });
+        
+        return res.status(StatusCodes.OK).json({ message: 'User inserted successfully' });
+    } catch (error) {
+        console.error('Error inserting user:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error ' });
     }
 }
