@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { getAllPermission, getOwnerById, getOwnerByNumber, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData } from "../services/user.service";
+import { deleteUserData, getAllPermission, getOwnerById, getOwnerByNumber, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData } from "../services/user.service";
 import { comparePassword, encryptPassword, generateRandomPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
@@ -124,6 +124,28 @@ export const getUser = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.OK).json({ success: true, data });
     } catch (error) {
         console.error('Error getting user:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const updateUser = async (req: AuthorizedRequest, res: Response) => {
+    const bodyData = req.body;
+    try {
+        await updateUserData(bodyData);
+        return res.status(StatusCodes.OK).json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const deleteUser = async (req: AuthorizedRequest, res: Response) => {
+    const { _id } = req?.query;
+    try {
+        await deleteUserData(_id);
+        return res.status(StatusCodes.OK).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }

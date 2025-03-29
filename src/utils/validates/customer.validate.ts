@@ -10,3 +10,11 @@ export const customerValidation = {
 export const getCustomerValidation = {
     userId: 'required|string'
 }
+
+export const updateCustomerValidation = {
+    _id: 'required|string'
+}
+
+export const deleteCustomerValidation = {
+    _id: 'required|string'
+}

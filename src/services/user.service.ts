@@ -111,3 +111,26 @@ export const getUserData = async (ownerId: string) => {
         throw error;
     }
 }
+
+export const updateUserData = async (data: IUser) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
+        const result = await User.findByIdAndUpdate(documentId, data, {
+            new: true,
+            runValidators: true
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteUserData = async (_id: string) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(_id?.toString());
+        const result = await User.findByIdAndDelete(documentId);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}

@@ -26,3 +26,7 @@ export const userInsertValidation = {
 export const userGetValidation = {
     userId: 'required|string',
 }
+
+export const userUpdateValidation = {
+    _id: 'required|string',
+}
