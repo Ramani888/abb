@@ -28,6 +28,7 @@ export interface IUser {
   name: string;
   email: string;
   number: number;
+  password: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

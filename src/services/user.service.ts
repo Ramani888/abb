@@ -1,4 +1,5 @@
 import { Owner } from "../models/owner.model";
+import { Permission } from "../models/permission.model";
 import { User } from "../models/user.model";
 import { UserRole } from "../models/userRole.model";
 import { UserRolePermission } from "../models/userRolePermission.model";
@@ -8,8 +9,8 @@ import mongoose from "mongoose";
 export const registerData = async (data: IOwner) => {
     try {
         const newData = new Owner(data);
-        await newData.save();
-        return;
+        const saveData = await newData.save();
+        return saveData?.toObject();
     } catch (error) {
         throw error;
     }
@@ -18,6 +19,15 @@ export const registerData = async (data: IOwner) => {
 export const getOwnerByNumber = async (number: number) => {
     try {
         const result = await Owner?.findOne({ number: number });
+        return result?.toObject();
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getUserByNumber = async (number: number) => {
+    try {
+        const result = await User?.findOne({ number: number });
         return result?.toObject();
     } catch (error) {
         throw error;
@@ -47,7 +57,7 @@ export const insertUserRoleData = async (userId: string, roleId: string, ownerId
     try {
         const newData = new UserRole({ userId, roleId, ownerId });
         const savedData = await newData.save();
-        return savedData;
+        return savedData?.toObject();
     } catch (error) {
         throw error;
     }
@@ -80,6 +90,24 @@ export const getUserById = async (userId: string) => {
         return result?.toObject();
     }
     catch (error) {
+        throw error;
+    }
+}
+
+export const getAllPermission = async () => {
+    try {
+        const result = await Permission?.find();
+        return result?.map((item) => item?.toObject());
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getUserData = async (ownerId: string) => {
+    try {
+        const result = await User?.find({ ownerId: ownerId });
+        return result?.map((item) => item.toObject());
+    } catch (error) {
         throw error;
     }
 }

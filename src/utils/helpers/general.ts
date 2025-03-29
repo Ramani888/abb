@@ -28,11 +28,17 @@ export function authenticateToken(req: any, res: any, next: any) {
   const token = req.header('Authorization');
   const SECRET_KEY: any = env.SECRET_KEY;
 
+  console.log('token', token)
+
+  console.log('SECRET_KEY', SECRET_KEY)
+
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   jwt.verify(token, SECRET_KEY, (err: any, user: any) => {
+    console.log('user', user);
+    console.log('err', err);
     if (err) {
       return res.status(403).json({ message: 'Forbidden' });
     }
@@ -40,4 +46,13 @@ export function authenticateToken(req: any, res: any, next: any) {
     req.user = user;
     next();
   });
+}
+
+export function generateRandomPassword(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let password = '';
+  for (let i = 0; i < 8; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
 }

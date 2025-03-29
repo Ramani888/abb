@@ -20,9 +20,9 @@ export const getCustomerData = async (ownerId: string) => {
     }
 }
 
-export const getCustomerByNumber = async (number: number) => {
+export const getCustomerByNumberAndOwnerId = async (number: number, ownerId: string) => {
     try {
-        const result = await Customer?.findOne({ number: number });
+        const result = await Customer?.findOne({ number: number, ownerId: ownerId });
         return result?.toObject();
     } catch (error) {
         throw error;

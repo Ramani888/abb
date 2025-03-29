@@ -1,15 +1,15 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { getCustomerByNumber, getCustomerData, insertCustomerData } from "../services/customer.service";
-import { getOwnerById, getUserById } from "../services/user.service";
+import { getCustomerByNumberAndOwnerId, getCustomerData, insertCustomerData } from "../services/customer.service";
+import { getUserById } from "../services/user.service";
 
 export const insertCustomer = async (req: AuthorizedRequest, res: Response) => {
     try {
         const bodyData = req?.body;
         const userData = await getUserById(bodyData?.userId);
 
-        const existingCustomer = await getCustomerByNumber(bodyData?.number);
+        const existingCustomer = await getCustomerByNumberAndOwnerId(bodyData?.number, userData?.ownerId ?? '');
         if (existingCustomer) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register.' });
 
         await insertCustomerData({...bodyData, ownerId: userData?.ownerId});
