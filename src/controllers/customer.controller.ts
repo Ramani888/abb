@@ -7,13 +7,14 @@ import { getUserById } from "../services/user.service";
 export const insertCustomer = async (req: AuthorizedRequest, res: Response) => {
     try {
         const bodyData = req?.body;
-        const userData = await getUserById(bodyData?.userId);
+        const { userId } = req.user;
+        const userData = await getUserById(userId);
 
         const existingCustomer = await getCustomerByNumberAndOwnerId(bodyData?.number, userData?.ownerId ?? '');
         if (existingCustomer) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register.' });
 
-        await insertCustomerData({...bodyData, ownerId: userData?.ownerId});
-        res.status(StatusCodes.OK).send({ success: true, message: 'Customer inserted successfully' });
+        await insertCustomerData({...bodyData, ownerId: userData?.ownerId, userId: userId});
+        return res.status(StatusCodes.OK).send({ success: true, message: 'Customer inserted successfully' });
     } catch (error) {
         console.error('Error inserting customer:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
@@ -21,7 +22,7 @@ export const insertCustomer = async (req: AuthorizedRequest, res: Response) => {
 }
 
 export const getCustomer = async (req: AuthorizedRequest, res: Response) => {
-    const { userId } = req.query;
+    const { userId } = req.user;
     try {
         const userData = await getUserById(userId);
         const data = await getCustomerData(userData?.ownerId ?? '');
@@ -34,8 +35,9 @@ export const getCustomer = async (req: AuthorizedRequest, res: Response) => {
 
 export const updateCustomer = async (req: AuthorizedRequest, res: Response) => {
     const bodyData = req?.body;
+    const { userId } = req?.user;
     try {
-        await updateCustomerData(bodyData);
+        await updateCustomerData({...bodyData, userId});
         return res.status(StatusCodes.OK).json({ success: true, message: 'Customer updated successfully' });
     } catch (error) {
         console.error('Error updating customer:', error);

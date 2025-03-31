@@ -16,17 +16,16 @@ export const loginValidation = {
 }
 
 export const userInsertValidation = {
-    userId: 'required|string',
     name: 'required|string',
     email: 'required|email',
     number: 'required|numeric',
     roleId: 'required|string'
 }
 
-export const userGetValidation = {
-    userId: 'required|string',
+export const userUpdateValidation = {
+    _id: 'required|string',
 }
 
-export const userUpdateValidation = {
+export const userDeleteValidation = {
     _id: 'required|string',
 }

@@ -1,5 +1,4 @@
 export const customerValidation = {
-    userId: 'required|string',
     name: 'required|string',
     email: 'required|email',
     number: 'required|numeric',
@@ -7,9 +6,9 @@ export const customerValidation = {
     customerType: 'required|string'
 }
 
-export const getCustomerValidation = {
-    userId: 'required|string'
-}
+// export const getCustomerValidation = {
+//     userId: 'required|string'
+// }
 
 export const updateCustomerValidation = {
     _id: 'required|string'

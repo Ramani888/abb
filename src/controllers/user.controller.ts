@@ -95,7 +95,8 @@ export const login = async (req: AuthorizedRequest, res: Response) => {
 export const insertUser = async (req: AuthorizedRequest, res: Response) => {
     try {
         const bodyData = req.body;
-        const userData = await getUserById(bodyData?.userId);
+        const { userId } = req.user;
+        const userData = await getUserById(userId);
 
         const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
         if (existingUser) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register.' });
@@ -117,7 +118,7 @@ export const insertUser = async (req: AuthorizedRequest, res: Response) => {
 }
 
 export const getUser = async (req: AuthorizedRequest, res: Response) => {
-    const { userId } = req.query;
+    const { userId } = req.user;
     try {
         const userData = await getUserById(userId);
         const data = await getUserData(userData?.ownerId ?? '');
