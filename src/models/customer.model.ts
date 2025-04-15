@@ -31,6 +31,15 @@ const CustomerSchema = new Schema({
         type: String,
         required: true,
     },
+    gstNumber: {
+        type: String
+    },
+    creditLimit: {
+        type: Number
+    },
+    paymentTerms: {
+        type: String
+    }
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');

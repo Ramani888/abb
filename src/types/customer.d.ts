@@ -7,6 +7,9 @@ export interface ICustomer {
     number: number;
     email: string;
     customerType: string;
+    gstNumber?: string;
+    creditLimit?: number;
+    paymentTerms?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
