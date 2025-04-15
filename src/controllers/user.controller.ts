@@ -150,3 +150,13 @@ export const deleteUser = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }
+
+export const getPermission = async (req: AuthorizedRequest, res: Response) => {
+    try {
+        const permissionData = await getAllPermission();
+        return res.status(StatusCodes.OK).json({ success: true, data: permissionData });
+    } catch (error) {
+        console.error('Error getting permission:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}

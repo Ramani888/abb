@@ -3,12 +3,13 @@ import { validateBody } from "../middleware/bodyValidate.middleware";
 import { shopValidation } from "../utils/validates/shop.validate";
 import { insertShop } from "../controllers/shop.controller";
 import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdateValidation } from "../utils/validates/user.validate";
-import { deleteUser, getUser, insertUser, login, register, updateUser } from "../controllers/user.controller";
+import { deleteUser, getPermission, getUser, insertUser, login, register, updateUser } from "../controllers/user.controller";
 import { customerValidation, deleteCustomerValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
 import { deleteCustomer, getCustomer, insertCustomer, updateCustomer } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
 import { categoryValidation, deleteCategoryValidation, updateCategoryValidation } from "../utils/validates/category.validate";
 import { deleteCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
+import { getAllPermission } from "../services/user.service";
 
 enum RouteSource {
     Body,
@@ -64,6 +65,10 @@ router.put('/user', authenticateToken, validateBody(userUpdateValidation), (req,
 
 router.delete('/user', authenticateToken, validateBody(userDeleteValidation, RouteSource?.Query), (req, res, next) => {
 	deleteUser(req, res).catch(next);
+})
+
+router.get('/permission', authenticateToken, (req, res, next) => {
+	getPermission(req, res).catch(next);
 })
 
 // Category
