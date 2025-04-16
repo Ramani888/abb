@@ -115,8 +115,75 @@ export const getRoleData = async () => {
 
 export const getUserData = async (ownerId: string) => {
     try {
-        const result = await User?.find({ ownerId: ownerId });
-        return result?.map((item) => item.toObject());
+        const users = await User.aggregate([
+            {
+                $match: { ownerId: ownerId }
+            },
+            {
+                $addFields: {
+                    userIdStr: { $toString: "$_id" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "UserRole",
+                    let: { userId: "$userIdStr" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { 
+                                    $and: [
+                                        { $eq: ["$userId", "$$userId"] },
+                                        { $eq: ["$ownerId", ownerId] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "userRole"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$userRole",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "Role", 
+                    let: { roleId: "$userRole.roleId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$_id", { $toObjectId: "$$roleId" }] }
+                            }
+                        }
+                    ],
+                    as: "roleData"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$roleData",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    number: 1,
+                    ownerId: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    roleName: { $ifNull: ["$roleData.name", ""] }
+                }
+            }
+        ]);
+        
+        return users;
     } catch (error) {
         throw error;
     }
