@@ -1,5 +1,6 @@
 import { Owner } from "../models/owner.model";
 import { Permission } from "../models/permission.model";
+import { Role } from "../models/role.model";
 import { User } from "../models/user.model";
 import { UserRole } from "../models/userRole.model";
 import { UserRolePermission } from "../models/userRolePermission.model";
@@ -97,6 +98,15 @@ export const getUserById = async (userId: string) => {
 export const getAllPermission = async () => {
     try {
         const result = await Permission?.find();
+        return result?.map((item) => item?.toObject());
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getRoleData = async () => {
+    try {
+        const result = await Role?.find();
         return result?.map((item) => item?.toObject());
     } catch (error) {
         throw error;

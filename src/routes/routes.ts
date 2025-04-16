@@ -3,7 +3,7 @@ import { validateBody } from "../middleware/bodyValidate.middleware";
 import { shopValidation } from "../utils/validates/shop.validate";
 import { insertShop } from "../controllers/shop.controller";
 import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdateValidation } from "../utils/validates/user.validate";
-import { deleteUser, getPermission, getUser, insertUser, login, register, updateUser } from "../controllers/user.controller";
+import { deleteUser, getPermission, getRole, getUser, insertUser, login, register, updateUser } from "../controllers/user.controller";
 import { customerValidation, deleteCustomerValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
 import { deleteCustomer, getCustomer, insertCustomer, updateCustomer } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
@@ -69,6 +69,10 @@ router.delete('/user', authenticateToken, validateBody(userDeleteValidation, Rou
 
 router.get('/permission', authenticateToken, (req, res, next) => {
 	getPermission(req, res).catch(next);
+})
+
+router.get('/role', authenticateToken, (req, res, next) => {
+	getRole(req, res).catch(next);
 })
 
 // Category

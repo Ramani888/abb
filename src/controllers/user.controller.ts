@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { deleteUserData, getAllPermission, getOwnerById, getOwnerByNumber, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData } from "../services/user.service";
+import { deleteUserData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData } from "../services/user.service";
 import { comparePassword, encryptPassword, generateRandomPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
@@ -157,6 +157,16 @@ export const getPermission = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.OK).json({ success: true, data: permissionData });
     } catch (error) {
         console.error('Error getting permission:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const getRole = async (req: AuthorizedRequest, res: Response) => {
+    try {
+        const data = await getRoleData();
+        return res.status(StatusCodes.OK).json({ success: true, data: data });
+    } catch (err) {
+        console.error('Error getting permission:', err);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }
