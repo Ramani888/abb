@@ -64,6 +64,15 @@ export const insertUserRoleData = async (userId: string, roleId: string, ownerId
     }
 }
 
+export const updateUserRoleData = async (ownerId: string, userId: string, roleId: string) => {
+    try {
+        const result = await UserRole.findOneAndUpdate({ userId, ownerId }, { roleId }, { new: true });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const insertUserRolePermissionData = async (userId: string, roleId: string, ownerId: string, permissionId: string) => {
     try {
         const newData = new UserRolePermission({ userId, roleId, ownerId, permissionId });
@@ -99,6 +108,15 @@ export const getAllPermission = async () => {
     try {
         const result = await Permission?.find();
         return result?.map((item) => item?.toObject());
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteUserRolePermissionData = async (ownerId: string, userId: string, roleId: string) => {
+    try {
+        const result = await UserRolePermission?.deleteMany({ userId, ownerId, roleId });
+        return result;
     } catch (error) {
         throw error;
     }
@@ -169,6 +187,55 @@ export const getUserData = async (ownerId: string) => {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            // Add lookup for UserRolePermission to get permissions
+            {
+                $lookup: {
+                    from: "UserRolePermission",
+                    let: { 
+                        userId: "$userIdStr", 
+                        roleId: "$userRole.roleId"
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { 
+                                    $and: [
+                                        { $eq: ["$userId", "$$userId"] },
+                                        { $eq: ["$roleId", "$$roleId"] },
+                                        { $eq: ["$ownerId", ownerId] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "userPermissions"
+                }
+            },
+            // Get permission details
+            {
+                $lookup: {
+                    from: "Permission",
+                    let: { 
+                        permissionIds: {
+                            $map: {
+                                input: "$userPermissions",
+                                as: "perm",
+                                in: "$$perm.permissionId"
+                            }
+                        }
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { 
+                                    $in: [{ $toString: "$_id" }, "$$permissionIds"] 
+                                }
+                            }
+                        }
+                    ],
+                    as: "permissionDetails"
+                }
+            },
             {
                 $project: {
                     _id: 1,
@@ -178,7 +245,25 @@ export const getUserData = async (ownerId: string) => {
                     ownerId: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    roleName: { $ifNull: ["$roleData.name", ""] }
+                    roleName: { $ifNull: ["$roleData.name", ""] },
+                    roleId: { $ifNull: ["$userRole.roleId", ""] },
+                    permissionIds: {
+                        $map: {
+                            input: "$userPermissions",
+                            as: "permission",
+                            in: "$$permission.permissionId"
+                        }
+                    },
+                    permissions: {
+                        $map: {
+                            input: "$permissionDetails",
+                            as: "pd",
+                            in: {
+                                id: { $toString: "$$pd._id" },
+                                name: "$$pd.name"
+                            }
+                        }
+                    }
                 }
             }
         ]);

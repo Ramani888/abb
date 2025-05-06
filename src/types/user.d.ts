@@ -25,10 +25,10 @@ export interface IOwner {
 
 export interface IUser {
   _id?: ObjectId;
-  name: string;
-  email: string;
-  number: number;
-  password: string;
+  name?: string;
+  email?: string;
+  number?: number;
+  password?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

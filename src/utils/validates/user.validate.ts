@@ -1,3 +1,5 @@
+import { comparePassword } from "../helpers/general"
+
 export const registerValidation = {
     name: 'required|string',
     email: 'required|email',
@@ -24,6 +26,11 @@ export const userInsertValidation = {
 
 export const userUpdateValidation = {
     _id: 'required|string',
+}
+
+export const userUpdatePasswordValidation = {
+    _id: 'required|string',
+    password: 'required|string',
 }
 
 export const userDeleteValidation = {

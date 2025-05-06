@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { deleteUserData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData } from "../services/user.service";
+import { deleteUserData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData, updateUserRoleData } from "../services/user.service";
 import { comparePassword, encryptPassword, generateRandomPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
@@ -132,10 +132,40 @@ export const getUser = async (req: AuthorizedRequest, res: Response) => {
 export const updateUser = async (req: AuthorizedRequest, res: Response) => {
     const bodyData = req.body;
     try {
+        const { userId } = req.user;
+        const userData = await getUserById(userId);
+
+        const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
+        if (existingUser && Number(existingUser?.number) !== Number(bodyData?.number)) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register.' });
+
         await updateUserData(bodyData);
+
+        if (bodyData?.roleId) {
+            await updateUserRoleData(userData?.ownerId ?? '', bodyData?._id, bodyData?.roleId);
+        }
+
+        if (bodyData?.permissionIds) {
+            await deleteUserRolePermissionData(userData?.ownerId ?? '', bodyData?._id, bodyData?.roleId);
+            bodyData?.permissionIds?.map(async (permissionId: string) => {
+                await insertUserRolePermissionData(bodyData?._id, bodyData?.roleId, userData?.ownerId ?? '', permissionId);
+            });
+        }
+
         return res.status(StatusCodes.OK).json({ message: 'User updated successfully' });
     } catch (error) {
         console.error('Error updating user:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const updateUserPassword = async (req: AuthorizedRequest, res: Response) => {
+    const { _id, password } = req.body;
+    try {
+        const newPassword = await encryptPassword(password);
+        await updateUserData({ _id, password: newPassword as string });
+        return res.status(StatusCodes.OK).json({ message: 'User password updated successfully' });
+    } catch (error) {
+        console.error('Error updating user password:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }
