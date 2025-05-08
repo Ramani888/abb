@@ -29,10 +29,67 @@ export const updateCategoryData = async (data: ICategory) => {
 
 export const getCategoryData = async (ownerId: string) => {
     try {
-        const result = await Category?.find({ ownerId: ownerId });
-        return result?.map((item) => item.toObject());
+        const categories = await Category.aggregate([
+            {
+                $match: { ownerId: ownerId }
+            },
+            {
+                $addFields: {
+                    categoryIdStr: { $toString: "$_id" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "Product", // Make sure this matches your actual Product collection name
+                    let: { categoryId: "$categoryIdStr" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { 
+                                    $and: [
+                                        { $eq: ["$categoryId", "$$categoryId"] },
+                                        { $eq: ["$ownerId", ownerId] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $count: "count"
+                        }
+                    ],
+                    as: "productCountData"
+                }
+            },
+            {
+                $addFields: {
+                    productCount: {
+                        $cond: {
+                            if: { $gt: [{ $size: "$productCountData" }, 0] },
+                            then: { $arrayElemAt: ["$productCountData.count", 0] },
+                            else: 0
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    ownerId: 1,
+                    userId: 1,
+                    name: 1,
+                    description: 1,
+                    isActive: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    productCount: 1
+                    // Only include fields you want to keep
+                }
+            }
+        ]);
+        
+        return categories;
     } catch (error) {
-        console.error('Error getting category:', error);
+        console.error('Error getting category with product count:', error);
         throw error;
     }
 }

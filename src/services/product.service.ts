@@ -27,8 +27,60 @@ export const updateProductData = async (data: IProduct) => {
 
 export const getProductData = async (ownerId: string) => {
     try {
-        const result = await Product?.find({ ownerId: ownerId });
-        return result?.map((item) => item.toObject());
+        const products = await Product.aggregate([
+            {
+                $match: { ownerId: ownerId }
+            },
+            {
+                $addFields: {
+                    categoryIdStr: { $toString: "$categoryId" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "Category", // Use your actual collection name here
+                    let: { categoryId: "$categoryIdStr" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$_id", { $toObjectId: "$$categoryId" }] }
+                            }
+                        }
+                    ],
+                    as: "categoryData"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$categoryData",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    ownerId: 1,
+                    userId: 1,
+                    name: 1,
+                    categoryId: 1,
+                    unit: 1,
+                    description: 1,
+                    sku: 1,
+                    barcode: 1,
+                    retailPrice: 1,
+                    wholesalePrice: 1,
+                    purchasePrice: 1,
+                    quantity: 1,
+                    minStockLevel: 1,
+                    taxRate: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] }
+                }
+            }
+        ]);
+        
+        return products;
     } catch (error) {
         throw error;
     }
