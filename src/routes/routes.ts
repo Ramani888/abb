@@ -9,7 +9,8 @@ import { deleteCustomer, getCustomer, insertCustomer, updateCustomer } from "../
 import { authenticateToken } from "../utils/helpers/general";
 import { categoryValidation, deleteCategoryValidation, updateCategoryValidation } from "../utils/validates/category.validate";
 import { deleteCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
-import { getAllPermission } from "../services/user.service";
+import { deleteProduct, getProduct, insertProduct, updateProduct } from "../controllers/product.controller";
+import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
 
 enum RouteSource {
     Body,
@@ -95,4 +96,22 @@ router.get('/category', authenticateToken, (req, res, next) => {
 router.delete('/category', authenticateToken, validateBody(deleteCategoryValidation, RouteSource?.Query), (req, res, next) => {
 	deleteCategory(req, res).catch(next);
 });
+
+// Product
+router.post('/product', authenticateToken, validateBody(addProductValidation), (req, res, next) => {
+	insertProduct(req, res).catch(next);
+});
+
+router.put('/product', authenticateToken, validateBody(updateProductValidation), (req, res, next) => {
+	updateProduct(req, res).catch(next);
+});
+
+router.get('/product', authenticateToken, (req, res, next) => {
+	getProduct(req, res).catch(next);
+});
+
+router.delete('/product', authenticateToken, validateBody(deleteProductValidation, RouteSource?.Query), (req, res, next) => {
+	deleteProduct(req, res).catch(next);
+});
+
 export default router;
