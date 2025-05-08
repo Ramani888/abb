@@ -75,7 +75,20 @@ export const getProductData = async (ownerId: string) => {
                     taxRate: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] }
+                    categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] },
+                    status: {
+                        $cond: [
+                            { $eq: ["$quantity", 0] },
+                            "Out of Stock",
+                            {
+                                $cond: [
+                                    { $lt: ["$quantity", "$minStockLevel"] },
+                                    "Low Stock",
+                                    "In Stock"
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         ]);
