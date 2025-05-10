@@ -170,6 +170,32 @@ export const updateUserPassword = async (req: AuthorizedRequest, res: Response) 
     }
 }
 
+export const updateUserPasswordByCurrent = async (req: AuthorizedRequest, res: Response) => {
+    const { _id, currentPassword, newPassword } = req.body;
+    try {
+        const existingUser = await getUserById(_id);
+        if (!existingUser) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found' });
+        
+        const isPasswordValid = await new Promise((resolve) =>
+            comparePassword(currentPassword, String(existingUser?.password))
+            .then((result) => resolve(result))
+            .catch((error) => resolve(false))
+        );
+
+        if (!isPasswordValid) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid current password!' });
+        }
+
+        const password = await encryptPassword(newPassword);
+        await updateUserData({ _id, password: password as string });
+        
+        return res.status(StatusCodes.OK).json({ message: 'User password updated successfully' });
+    } catch (error) {
+        console.error('Error updating user password:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
 export const deleteUser = async (req: AuthorizedRequest, res: Response) => {
     const { _id } = req?.query;
     try {

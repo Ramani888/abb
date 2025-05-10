@@ -33,6 +33,12 @@ export const userUpdatePasswordValidation = {
     password: 'required|string',
 }
 
+export const userUpdatePasswordByCurrentValidation = {
+    _id: 'required|string',
+    currentPassword: 'required|string',
+    newPassword: 'required|string'
+}
+
 export const userDeleteValidation = {
     _id: 'required|string',
 }

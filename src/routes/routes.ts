@@ -2,8 +2,8 @@ import express from "express";
 import { validateBody } from "../middleware/bodyValidate.middleware";
 import { shopValidation } from "../utils/validates/shop.validate";
 import { insertShop } from "../controllers/shop.controller";
-import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdatePasswordValidation, userUpdateValidation } from "../utils/validates/user.validate";
-import { deleteUser, getPermission, getRole, getUser, insertUser, login, register, updateUser, updateUserPassword } from "../controllers/user.controller";
+import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdatePasswordByCurrentValidation, userUpdatePasswordValidation, userUpdateValidation } from "../utils/validates/user.validate";
+import { deleteUser, getPermission, getRole, getUser, insertUser, login, register, updateUser, updateUserPassword, updateUserPasswordByCurrent } from "../controllers/user.controller";
 import { customerValidation, deleteCustomerValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
 import { deleteCustomer, getCustomer, insertCustomer, updateCustomer } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
@@ -66,6 +66,10 @@ router.put('/user', authenticateToken, validateBody(userUpdateValidation), (req,
 
 router.put('/user/password', authenticateToken, validateBody(userUpdatePasswordValidation), (req, res, next) => {
 	updateUserPassword(req, res).catch(next);
+})
+
+router.put('/user/password/current', authenticateToken, validateBody(userUpdatePasswordByCurrentValidation), (req, res, next) => {
+	updateUserPasswordByCurrent(req, res).catch(next);
 })
 
 router.delete('/user', authenticateToken, validateBody(userDeleteValidation, RouteSource?.Query), (req, res, next) => {
