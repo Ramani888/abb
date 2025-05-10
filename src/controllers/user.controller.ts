@@ -151,7 +151,7 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
             });
         }
 
-        return res.status(StatusCodes.OK).json({ message: 'User updated successfully' });
+        return res.status(StatusCodes.OK).json({ success: true, message: 'User updated successfully' });
     } catch (error) {
         console.error('Error updating user:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
@@ -189,7 +189,7 @@ export const updateUserPasswordByCurrent = async (req: AuthorizedRequest, res: R
         const password = await encryptPassword(newPassword);
         await updateUserData({ _id, password: password as string });
         
-        return res.status(StatusCodes.OK).json({ message: 'User password updated successfully' });
+        return res.status(StatusCodes.OK).json({ success: true, message: 'User password updated successfully' });
     } catch (error) {
         console.error('Error updating user password:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
