@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { deleteUserData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData, updateUserRoleData } from "../services/user.service";
+import { deleteUserData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, getUserRolePermissionData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData, updateUserRoleData } from "../services/user.service";
 import { comparePassword, encryptPassword, generateRandomPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
@@ -84,7 +84,9 @@ export const login = async (req: AuthorizedRequest, res: Response) => {
             { expiresIn: '30d' } // expires in 5 minutes
         );
 
-        return res.status(StatusCodes.OK).send({ user: {...existingUser, token}, owner: existingOwner, success: true, message: 'Login successfully.' });
+        const permissionData = await getUserRolePermissionData(existingUser?.ownerId, existingUser?._id?.toString());
+
+        return res.status(StatusCodes.OK).send({ user: {...existingUser, token, permissionData}, owner: existingOwner, success: true, message: 'Login successfully.' });
 
     } catch (error) {
         console.error('Error logging in:', error);

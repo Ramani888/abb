@@ -113,6 +113,72 @@ export const getAllPermission = async () => {
     }
 }
 
+export const getUserRolePermissionData = async (ownerId: string, userId: string) => {
+    try {
+        const result = await UserRolePermission?.aggregate([
+            {
+                $match: { userId, ownerId }
+            },
+            {
+                $lookup: {
+                    from: "Permission",
+                    let: { permissionId: "$permissionId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$_id", { $toObjectId: "$$permissionId" }] }
+                            }
+                        }
+                    ],
+                    as: "permissionData"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$permissionData",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "Role",
+                    let: { roleId: "$roleId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$_id", { $toObjectId: "$$roleId" }] }
+                            }
+                        }
+                    ],
+                    as: "roleData"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$roleData",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userId: 1,
+                    roleId: 1,
+                    ownerId: 1,
+                    permissionId: 1,
+                    permissionName: "$permissionData.name",
+                    roleName: "$roleData.name",
+                    createdAt: 1,
+                    updatedAt: 1
+                }
+            }
+        ]);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const deleteUserRolePermissionData = async (ownerId: string, userId: string, roleId: string) => {
     try {
         const result = await UserRolePermission?.deleteMany({ userId, ownerId, roleId });
