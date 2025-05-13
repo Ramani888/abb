@@ -2,7 +2,7 @@ import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
-import { deleteCategoryData, getCategoryData, insertCategoryData, updateCategoryData } from "../services/category.service";
+import { deleteCategoryData, getActiveCategoryData, getCategoryData, insertCategoryData, updateCategoryData } from "../services/category.service";
 
 export const insertCategory = async (req: AuthorizedRequest, res: Response) => {
     try {
@@ -38,6 +38,18 @@ export const getCategory = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.OK).json({ success: true, data });
     } catch (error) {
         console.error('Error getting category:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const getActiveCategory = async (req: AuthorizedRequest, res: Response) => {
+    const { userId } = req.user;
+    try {
+        const userData = await getUserById(userId);
+        const data = await getActiveCategoryData(userData?.ownerId ?? '');
+        return res.status(StatusCodes.OK).json({ success: true, data });
+    } catch (error) {
+        console.error('Error getting active category:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }

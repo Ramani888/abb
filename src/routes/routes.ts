@@ -8,7 +8,7 @@ import { customerValidation, deleteCustomerValidation, updateCustomerValidation 
 import { deleteCustomer, getCustomer, insertCustomer, updateCustomer } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
 import { categoryValidation, deleteCategoryValidation, updateCategoryValidation } from "../utils/validates/category.validate";
-import { deleteCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
+import { deleteCategory, getActiveCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
 import { deleteProduct, getProduct, insertProduct, updateProduct } from "../controllers/product.controller";
 import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
 
@@ -95,6 +95,10 @@ router.put('/category', authenticateToken, validateBody(updateCategoryValidation
 
 router.get('/category', authenticateToken, (req, res, next) => {
 	getCategory(req, res).catch(next);
+});
+
+router.get('/category/active', authenticateToken, (req, res, next) => {
+	getActiveCategory(req, res).catch(next);
 });
 
 router.delete('/category', authenticateToken, validateBody(deleteCategoryValidation, RouteSource?.Query), (req, res, next) => {
