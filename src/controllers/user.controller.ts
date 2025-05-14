@@ -228,3 +228,15 @@ export const getRole = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }
+
+export const getUserRolePermission = async (req: AuthorizedRequest, res: Response) => {
+    const { userId } = req.user;
+    try {
+        const userData = await getUserById(userId);
+        const data = await getUserRolePermissionData(userData?.ownerId ?? '', userId);
+        return res.status(StatusCodes.OK).json({ success: true, data });
+    } catch (error) {
+        console.error('Error getting user role permission:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
