@@ -189,8 +189,14 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
 export const updateUserPassword = async (req: AuthorizedRequest, res: Response) => {
     const { _id, password } = req.body;
     try {
+        const userData = await getUserById(_id);
+        const ownerData = await getOwnerById(userData?.ownerId ?? '');
         const newPassword = await encryptPassword(password);
         await updateUserData({ _id, password: newPassword as string });
+        // Update owner data if the pssword has changed
+        if (Number(ownerData?.number) === Number(userData?.number) || Number(ownerData?.number) === Number(userData?.number)) {
+            await updateOwnerData({ ...ownerData, password: newPassword as string });
+        }
         return res.status(StatusCodes.OK).json({ message: 'User password updated successfully' });
     } catch (error) {
         console.error('Error updating user password:', error);
@@ -202,6 +208,8 @@ export const updateUserPasswordByCurrent = async (req: AuthorizedRequest, res: R
     const { _id, currentPassword, newPassword } = req.body;
     try {
         const existingUser = await getUserById(_id);
+        const ownerData = await getOwnerById(existingUser?.ownerId ?? '');
+
         if (!existingUser) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'User not found' });
         
         const isPasswordValid = await new Promise((resolve) =>
@@ -216,6 +224,10 @@ export const updateUserPasswordByCurrent = async (req: AuthorizedRequest, res: R
 
         const password = await encryptPassword(newPassword);
         await updateUserData({ _id, password: password as string });
+        // Update owner data if the pssword has changed
+        if (Number(ownerData?.number) === Number(existingUser?.number) || Number(ownerData?.number) === Number(existingUser?.number)) {
+            await updateOwnerData({ ...ownerData, password: password as string });
+        }
         
         return res.status(StatusCodes.OK).json({ success: true, message: 'User password updated successfully' });
     } catch (error) {
