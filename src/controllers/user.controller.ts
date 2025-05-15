@@ -137,23 +137,42 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
         const { userId } = req.user;
         const userData = await getUserById(userId);
 
+        // Check if another user with the same number exists (excluding current user)
         const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
-        if (existingUser && Number(existingUser?.number) !== Number(bodyData?.number)) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register.' });
+        if (existingUser && existingUser._id.toString() !== bodyData._id) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered.' });
+        }
 
+        // Update user data
         await updateUserData(bodyData);
 
+        // Prepare async operations for role and permissions
+        const ops: Promise<any>[] = [];
+
         if (bodyData?.roleId) {
-            await updateUserRoleData(userData?.ownerId ?? '', bodyData?._id, bodyData?.roleId);
+            ops.push(updateUserRoleData(userData?.ownerId ?? '', bodyData._id, bodyData.roleId));
         }
 
-        if (bodyData?.permissionIds) {
-            await deleteUserRolePermissionData(userData?.ownerId ?? '', bodyData?._id);
-            bodyData?.permissionIds?.map(async (permissionId: string) => {
-                await insertUserRolePermissionData(bodyData?._id, bodyData?.roleId, userData?.ownerId ?? '', permissionId);
-            });
+        if (Array.isArray(bodyData?.permissionIds)) {
+            // Remove old permissions and add new ones
+            ops.push(
+                deleteUserRolePermissionData(userData?.ownerId ?? '', bodyData._id)
+                    .then(() =>
+                        Promise.all(
+                            bodyData.permissionIds.map((permissionId: string) =>
+                                insertUserRolePermissionData(bodyData._id, bodyData.roleId, userData?.ownerId ?? '', permissionId)
+                            )
+                        )
+                    )
+            );
         }
 
-        return res.status(StatusCodes.OK).json({ success: true, message: 'User updated successfully' });
+        await Promise.all(ops);
+
+        // Fetch updated permissions
+        const permissionData = await getUserRolePermissionData(userData?.ownerId ?? '', bodyData._id);
+
+        return res.status(StatusCodes.OK).json({ success: true, message: 'User updated successfully', permissionData });
     } catch (error) {
         console.error('Error updating user:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
