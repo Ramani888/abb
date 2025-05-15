@@ -353,6 +353,19 @@ export const updateUserData = async (data: IUser) => {
     }
 }
 
+export const updateOwnerData = async (data: any) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
+        const result = await Owner.findByIdAndUpdate(documentId, data, {
+            new: true,
+            runValidators: true
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const deleteUserData = async (_id: string) => {
     try {
         const documentId = new mongoose.Types.ObjectId(_id?.toString());

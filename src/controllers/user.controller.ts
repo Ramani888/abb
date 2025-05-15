@@ -1,10 +1,11 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { deleteUserData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, getUserRolePermissionData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateUserData, updateUserRoleData } from "../services/user.service";
+import { deleteUserData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, getUserRolePermissionData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateOwnerData, updateUserData, updateUserRoleData } from "../services/user.service";
 import { comparePassword, encryptPassword, generateRandomPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
+import { get } from "mongoose";
 const env = process.env;
 
 export const register = async (req: AuthorizedRequest, res: Response) => {
@@ -136,6 +137,7 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
     try {
         const { userId } = req.user;
         const userData = await getUserById(userId);
+        const ownerData = await getOwnerById(userData?.ownerId ?? '');
 
         // Check if another user with the same number exists (excluding current user)
         const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
@@ -145,6 +147,11 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
 
         // Update user data
         await updateUserData(bodyData);
+
+        // Update owner data if the number or email has changed
+        if (Number(ownerData?.number) === Number(bodyData?.number) || Number(ownerData?.number) === Number(userData?.number)) {
+            await updateOwnerData({ ...ownerData, name: bodyData?.name, number: bodyData?.number, email: bodyData?.email });
+        }
 
         // Prepare async operations for role and permissions
         const ops: Promise<any>[] = [];
