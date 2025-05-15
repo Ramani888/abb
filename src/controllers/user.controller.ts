@@ -147,7 +147,7 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
         }
 
         if (bodyData?.permissionIds) {
-            await deleteUserRolePermissionData(userData?.ownerId ?? '', bodyData?._id, bodyData?.roleId);
+            await deleteUserRolePermissionData(userData?.ownerId ?? '', bodyData?._id);
             bodyData?.permissionIds?.map(async (permissionId: string) => {
                 await insertUserRolePermissionData(bodyData?._id, bodyData?.roleId, userData?.ownerId ?? '', permissionId);
             });

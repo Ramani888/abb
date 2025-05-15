@@ -179,9 +179,9 @@ export const getUserRolePermissionData = async (ownerId: string, userId: string)
     }
 }
 
-export const deleteUserRolePermissionData = async (ownerId: string, userId: string, roleId: string) => {
+export const deleteUserRolePermissionData = async (ownerId: string, userId: string) => {
     try {
-        const result = await UserRolePermission?.deleteMany({ userId, ownerId, roleId });
+        const result = await UserRolePermission?.deleteMany({ userId, ownerId });
         return result;
     } catch (error) {
         throw error;
