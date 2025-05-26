@@ -10,7 +10,8 @@ export const addProductValidation = {
     purchasePrice: 'required|numeric',
     quantity: 'required|numeric',
     minStockLevel: 'required|numeric',
-    taxRate: 'required|numeric'
+    taxRate: 'required|numeric',
+    packingSize: 'required|string'
 }
     
 export const updateProductValidation = {

@@ -14,6 +14,8 @@ export interface IProduct {
     quantity: number;
     minStockLevel: number;
     taxRate: number;
+    packingSize?: string;
+    isDeleted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }

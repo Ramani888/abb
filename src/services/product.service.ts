@@ -29,7 +29,7 @@ export const getProductData = async (ownerId: string) => {
     try {
         const products = await Product.aggregate([
             {
-                $match: { ownerId: ownerId }
+                $match: { ownerId: ownerId, isDeleted: false }
             },
             {
                 $addFields: {
@@ -102,7 +102,9 @@ export const getProductData = async (ownerId: string) => {
 export const deleteProductData = async (_id: string) => {
     try {
         const documentId = new mongoose.Types.ObjectId(_id?.toString());
-        const result = await Product.findByIdAndDelete(documentId);
+        // const result = await Product.findByIdAndDelete(documentId);
+        // return result;
+        const result = await Product.findByIdAndUpdate(documentId, { isDeleted: true }, { new: true });
         return result;
     } catch (error) {
         throw error;

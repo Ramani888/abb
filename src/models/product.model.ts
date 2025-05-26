@@ -58,6 +58,14 @@ const ProductSchema = new Schema({
     taxRate: {
         type: Number,
         required: true,
+    },
+    packingSize: {
+        type: String,
+        required: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
     }
 }, {timestamps: true});
 
