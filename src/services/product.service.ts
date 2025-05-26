@@ -73,6 +73,7 @@ export const getProductData = async (ownerId: string) => {
                     quantity: 1,
                     minStockLevel: 1,
                     taxRate: 1,
+                    packingSize: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] },
