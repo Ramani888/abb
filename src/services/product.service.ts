@@ -29,7 +29,14 @@ export const getProductData = async (ownerId: string) => {
     try {
         const products = await Product.aggregate([
             {
-                $match: { ownerId: ownerId, isDeleted: false }
+                $match: {
+                    ownerId: ownerId,
+                    $or: [
+                        { isDeleted: false },
+                        { isDeleted: { $exists: false } }
+                    ]
+                }
+
             },
             {
                 $addFields: {
