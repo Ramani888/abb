@@ -51,3 +51,10 @@ export function generateRandomPassword(): string {
   }
   return password;
 }
+
+export function generateInvoiceNumber(): string {
+  const now = new Date();
+  const datePart = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+  const timePart = now.getTime(); // Milliseconds since epoch
+  return `INV-${datePart}-${timePart}`;
+}
