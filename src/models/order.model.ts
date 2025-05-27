@@ -57,7 +57,7 @@ const OrderSchema = new Schema({
             type: Number,
             required: true,
         },
-        gst: {
+        gstRate: {
             type: Number,
             required: true,
         },

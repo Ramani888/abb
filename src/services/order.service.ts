@@ -94,7 +94,7 @@ export const getOrderData = async (ownerId: string) => {
                             productId: "$products.productId",
                             quantity: "$products.quantity",
                             price: "$products.price",
-                            gst: "$products.gst",
+                            gstRate: "$products.gstRate",
                             gstAmount: "$products.gstAmount",
                             total: "$products.total",
                             _id: "$products._id",

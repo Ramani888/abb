@@ -11,7 +11,7 @@ export const createOrderValidation = {
     "products.*.productId": "required|string",
     "products.*.quantity": "required|numeric",
     "products.*.price": "required|numeric",
-    "products.*.gst": "required|numeric",
+    "products.*.gstRate": "required|numeric",
     "products.*.gstAmount": "required|numeric",
     "products.*.total": "required|numeric"
 };

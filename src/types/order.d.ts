@@ -14,7 +14,7 @@ export interface IOrder {
         productId: string; // ID of the product
         quantity: number; // Quantity of the product ordered
         price: number; // Price per unit of the product
-        gst: number; // GST percentage applicable on the product
+        gstRate: number; // GST percentage applicable on the product
         gstAmount: number; // GST amount for this product
         total: number; // Total price for this product (price * quantity + gstAmount)
     }>;
