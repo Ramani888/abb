@@ -13,6 +13,8 @@ import { deleteProduct, getProduct, insertProduct, updateProduct } from "../cont
 import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
 import { createOrderValidation, deleteOrderValidation, updateOrderValidation } from "../utils/validates/order.validate";
 import { createOrder, deleteOrder, getOrder, updateOrder } from "../controllers/order.controller";
+import { addSupplierValidation, deleteSupplierValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
+import { addSupplier, deleteSupplier, getSupplier, updateSupplier } from "../controllers/supplier.controller";
 
 enum RouteSource {
     Body,
@@ -145,4 +147,20 @@ router.delete('/order', authenticateToken, validateBody(deleteOrderValidation, R
 	deleteOrder(req, res).catch(next);
 });
 
+// Supplier
+router.post('/supplier', authenticateToken, validateBody(addSupplierValidation), (req, res, next) => {
+	addSupplier(req, res).catch(next);
+});
+
+router.get('/supplier', authenticateToken, (req, res, next) => {
+	getSupplier(req, res).catch(next);
+});
+
+router.put('/supplier', authenticateToken, validateBody(updateSupplierValidation), (req, res, next) => {
+	updateSupplier(req, res).catch(next);
+});
+
+router.delete('/supplier', authenticateToken, validateBody(deleteSupplierValidation, RouteSource?.Query), (req, res, next) => {
+	deleteSupplier(req, res).catch(next);
+});
 export default router;
