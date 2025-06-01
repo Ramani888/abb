@@ -1,9 +1,9 @@
 export const addProductValidation = {
     name: 'required|string',
     categoryId: 'required|string',
-    unit: 'required|string',
     description: 'required|string',
     "variants": "required|array",
+    "variants.*.unit": "required|string",
     "variants.*.packingSize": "required|string",
     "variants.*.sku": "required|string",
     "variants.*.barcode": "required|string",

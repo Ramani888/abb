@@ -66,7 +66,8 @@ export const getProductData = async (ownerId: string) => {
                                 ]
                             }
                         }
-                    }
+                    },
+                    variantsCount: { $size: "$variants" }
                 }
             },
             {
@@ -97,9 +98,9 @@ export const getProductData = async (ownerId: string) => {
                     name: 1,
                     categoryId: 1,
                     categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] },
-                    unit: 1,
                     description: 1,
                     variants: 1,
+                    variantsCount: 1,
                     captureDate: 1,
                     createdAt: 1,
                     updatedAt: 1,

@@ -19,16 +19,16 @@ const ProductSchema = new Schema({
         type: String,
         required: true,
     },
-    unit: {
-        type: String,
-        required: true,
-    },
     description: {
         type: String,
         required: true,
     },
     variants: [
         {
+            unit: {
+                type: String,
+                required: true,
+            },
             packingSize: {
                 type: String,
                 required: true,
