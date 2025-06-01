@@ -3,15 +3,16 @@ export const addProductValidation = {
     categoryId: 'required|string',
     unit: 'required|string',
     description: 'required|string',
-    sku: 'required|string',
-    barcode: 'required|string',
-    retailPrice: 'required|numeric',
-    wholesalePrice: 'required|numeric',
-    purchasePrice: 'required|numeric',
-    quantity: 'required|numeric',
-    minStockLevel: 'required|numeric',
-    taxRate: 'required|numeric',
-    packingSize: 'required|string'
+    "variants": "required|array",
+    "variants.*.packingSize": "required|string",
+    "variants.*.sku": "required|string",
+    "variants.*.barcode": "required|string",
+    "variants.*.retailPrice": "required|numeric",
+    "variants.*.wholesalePrice": "required|numeric",
+    "variants.*.purchasePrice": "required|numeric",
+    "variants.*.minStockLevel": "required|numeric",
+    "variants.*.taxRate": "required|numeric",
+    "variants.*.quantity": "required|numeric"
 }
     
 export const updateProductValidation = {

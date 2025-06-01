@@ -40,7 +40,33 @@ export const getProductData = async (ownerId: string) => {
             },
             {
                 $addFields: {
-                    categoryIdStr: { $toString: "$categoryId" }
+                    categoryIdStr: { $toString: "$categoryId" },
+                    variants: {
+                        $map: {
+                            input: "$variants",
+                            as: "variant",
+                            in: {
+                                $mergeObjects: [
+                                    "$$variant",
+                                    { status: 
+                                        {
+                                            $cond: [
+                                                { $eq: ["$$variant.quantity", 0] },
+                                                "Out of Stock",
+                                                {
+                                                    $cond: [
+                                                        { $lt: ["$$variant.quantity", "$$variant.minStockLevel"] },
+                                                        "Low Stock",
+                                                        "In Stock"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
                 }
             },
             {
@@ -70,33 +96,13 @@ export const getProductData = async (ownerId: string) => {
                     userId: 1,
                     name: 1,
                     categoryId: 1,
+                    categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] },
                     unit: 1,
                     description: 1,
-                    sku: 1,
-                    barcode: 1,
-                    retailPrice: 1,
-                    wholesalePrice: 1,
-                    purchasePrice: 1,
-                    quantity: 1,
-                    minStockLevel: 1,
-                    taxRate: 1,
-                    packingSize: 1,
+                    variants: 1,
+                    captureDate: 1,
                     createdAt: 1,
                     updatedAt: 1,
-                    categoryName: { $ifNull: ["$categoryData.name", "Unknown Category"] },
-                    status: {
-                        $cond: [
-                            { $eq: ["$quantity", 0] },
-                            "Out of Stock",
-                            {
-                                $cond: [
-                                    { $lt: ["$quantity", "$minStockLevel"] },
-                                    "Low Stock",
-                                    "In Stock"
-                                ]
-                            }
-                        ]
-                    }
                 }
             }
         ]);
