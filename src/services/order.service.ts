@@ -16,7 +16,7 @@ export const createOrderData = async (data: IOrder) => {
 export const getOrderData = async (ownerId: string) => {
     try {
         const data = await Order.aggregate([
-            { 
+            {
                 $match: {
                     ownerId: ownerId,
                     $or: [
@@ -25,6 +25,7 @@ export const getOrderData = async (ownerId: string) => {
                     ]
                 }
             },
+            // Convert customerId to ObjectId for lookup
             {
                 $addFields: {
                     customerObjectId: {
@@ -36,6 +37,7 @@ export const getOrderData = async (ownerId: string) => {
                     }
                 }
             },
+            // Lookup customer data
             {
                 $lookup: {
                     from: "Customer",
@@ -45,6 +47,7 @@ export const getOrderData = async (ownerId: string) => {
                 }
             },
             { $unwind: { path: "$customerData", preserveNullAndEmptyArrays: true } },
+            // Unwind products to process each order item
             { $unwind: { path: "$products", preserveNullAndEmptyArrays: true } },
             {
                 $addFields: {
@@ -54,9 +57,17 @@ export const getOrderData = async (ownerId: string) => {
                             { $toObjectId: "$products.productId" },
                             null
                         ]
+                    },
+                    "products.variantObjectId": {
+                        $cond: [
+                            { $regexMatch: { input: "$products.variantId", regex: /^[a-f\d]{24}$/i } },
+                            { $toObjectId: "$products.variantId" },
+                            null
+                        ]
                     }
                 }
             },
+            // Lookup product
             {
                 $lookup: {
                     from: "Product",
@@ -70,6 +81,31 @@ export const getOrderData = async (ownerId: string) => {
                     "products.productData": { $arrayElemAt: ["$productData", 0] }
                 }
             },
+            // Extract the correct variant from productData.variants
+            {
+                $addFields: {
+                    "products.variantData": {
+                        $let: {
+                            vars: {
+                                variants: "$products.productData.variants"
+                            },
+                            in: {
+                                $arrayElemAt: [
+                                    {
+                                        $filter: {
+                                            input: "$$variants",
+                                            as: "variant",
+                                            cond: { $eq: ["$$variant._id", "$products.variantObjectId"] }
+                                        }
+                                    },
+                                    0
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            // Group back to orders with products array
             {
                 $group: {
                     _id: "$_id",
@@ -92,13 +128,16 @@ export const getOrderData = async (ownerId: string) => {
                     products: {
                         $push: {
                             productId: "$products.productId",
+                            variantId: "$products.variantId",
+                            unit: "$products.unit",
+                            carton: "$products.carton",
                             quantity: "$products.quantity",
                             price: "$products.price",
                             gstRate: "$products.gstRate",
                             gstAmount: "$products.gstAmount",
                             total: "$products.total",
-                            _id: "$products._id",
-                            productData: { $ifNull: ["$products.productData", {}] }
+                            productData: "$products.productData",
+                            variantData: "$products.variantData"
                         }
                     }
                 }

@@ -22,6 +22,7 @@ export interface IProduct {
   categoryName?: string;
   description?: string;
   variants: IVariant[];
+  variantsCount: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

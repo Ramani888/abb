@@ -48,6 +48,20 @@ const OrderSchema = new Schema({
             type: String,
             required: true,
         },
+        variantId: {
+            type: String,
+            required: true,
+        },
+        unit: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
+        carton: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
         quantity: {
             type: Number,
             required: true,
