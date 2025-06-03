@@ -15,6 +15,8 @@ import { createOrderValidation, deleteOrderValidation, updateOrderValidation } f
 import { createOrder, deleteOrder, getOrder, updateOrder } from "../controllers/order.controller";
 import { addSupplierValidation, deleteSupplierValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
 import { addSupplier, deleteSupplier, getSupplier, updateSupplier } from "../controllers/supplier.controller";
+import { createPurchaseOrderValidation, deletePurchaseOrderValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
+import { createPurchaseOrder, deletePurchaseOrder, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
 
 enum RouteSource {
     Body,
@@ -163,4 +165,22 @@ router.put('/supplier', authenticateToken, validateBody(updateSupplierValidation
 router.delete('/supplier', authenticateToken, validateBody(deleteSupplierValidation, RouteSource?.Query), (req, res, next) => {
 	deleteSupplier(req, res).catch(next);
 });
+
+// Purchase Order
+router.post('/purchase-order', authenticateToken, validateBody(createPurchaseOrderValidation), (req, res, next) => {
+	createPurchaseOrder(req, res).catch(next);
+});
+
+router.get('/purchase-order', authenticateToken, (req, res, next) => {
+	getPurchaseOrder(req, res).catch(next);
+});
+
+router.put('/purchase-order', authenticateToken, validateBody(updatePurchaseOrderValidation), (req, res, next) => {
+	updatePurchaseOrder(req, res).catch(next);
+});
+
+router.delete('/purchase-order', authenticateToken, validateBody(deletePurchaseOrderValidation, RouteSource?.Query), (req, res, next) => {
+	deletePurchaseOrder(req, res).catch(next);
+});
+
 export default router;
