@@ -94,7 +94,12 @@ const OrderSchema = new Schema({
     isDeleted: {
         type: Boolean,
         default: false
-    }
+    },
+    captureDate: {
+        type: Date,
+        required: false,
+        default: Date.now
+    },
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');

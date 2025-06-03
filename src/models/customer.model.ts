@@ -40,6 +40,12 @@ const CustomerSchema = new Schema({
     paymentTerms: {
         type: String
     }
+    ,
+    captureDate: {
+        type: Date,
+        required: false,
+        default: Date.now
+    },
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');
