@@ -15,6 +15,7 @@ export interface IPurchaseOrder {
         unit: number; // Unit of measurement for the product (e.g., kg, pcs)
         carton: number; // Number of cartons for the product
         quantity: number; // Quantity of the product ordered
+        mrp: number; // Maximum Retail Price of the product
         price: number; // Price per unit of the product
         gstRate: number; // GST percentage applicable on the product
         gstAmount: number; // GST amount for this product

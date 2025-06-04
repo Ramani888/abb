@@ -131,6 +131,7 @@ export const getPurchaseOrderData = async (ownerId: string) => {
                             unit: "$products.unit",
                             carton: "$products.carton",
                             quantity: "$products.quantity",
+                            mrp: "$products.mrp",
                             price: "$products.price",
                             gstRate: "$products.gstRate",
                             gstAmount: "$products.gstAmount",

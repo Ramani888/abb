@@ -63,6 +63,10 @@ const PurchaseOrderSchema = new Schema({
             required: true,
             min: 1,
         },
+        mrp: {
+            type: Number,
+            required: true,
+        },
         price: {
             type: Number,
             required: true,
