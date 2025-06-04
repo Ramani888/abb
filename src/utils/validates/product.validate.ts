@@ -7,6 +7,7 @@ export const addProductValidation = {
     "variants.*.packingSize": "required|string",
     "variants.*.sku": "required|string",
     "variants.*.barcode": "required|string",
+    "variants.*.mrp": "required|numeric",
     "variants.*.retailPrice": "required|numeric",
     "variants.*.wholesalePrice": "required|numeric",
     "variants.*.purchasePrice": "required|numeric",

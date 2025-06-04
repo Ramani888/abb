@@ -45,6 +45,10 @@ const ProductSchema = new Schema({
                 type: Number,
                 required: true,
             },
+            mrp: {
+                type: Number,
+                required: true,
+            },
             wholesalePrice: {
                 type: Number,
                 required: true,
