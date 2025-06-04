@@ -4,6 +4,7 @@ export interface IVariant {
   packingSize: string;
   sku: string;
   barcode: string;
+  mrp: number;
   retailPrice: number;
   wholesalePrice: number;
   purchasePrice: number;
