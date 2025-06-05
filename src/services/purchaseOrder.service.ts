@@ -121,6 +121,7 @@ export const getPurchaseOrderData = async (ownerId: string) => {
                     invoiceNumber: { $first: "$invoiceNumber" },
                     notes: { $first: "$notes" },
                     isDeleted: { $first: "$isDeleted" },
+                    captureDate: { $first: "$captureDate" },
                     createdAt: { $first: "$createdAt" },
                     updatedAt: { $first: "$updatedAt" },
                     supplierData: { $first: "$supplierData" },
@@ -158,6 +159,7 @@ export const getPurchaseOrderData = async (ownerId: string) => {
                     invoiceNumber: 1,
                     notes: 1,
                     isDeleted: 1,
+                    captureDate: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     supplierData: 1
