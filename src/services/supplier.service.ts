@@ -57,7 +57,7 @@ export const getSupplierDetailOrderData = async (_id: string) => {
         }
 
         // Get all orders for this supplier
-        const orders = await PurchaseOrder.find({ supplierId: _id });
+        const orders = await PurchaseOrder.find({ supplierId: _id, isDeleted: false });
 
         // Calculate total order count
         const totalOrder = orders?.length;

@@ -31,7 +31,7 @@ export const getCustomerDetailOrderData = async (_id: string) => {
         }
 
         // Get all orders for this customer
-        const orders = await Order.find({ customerId: _id });
+        const orders = await Order.find({ customerId: _id, isDeleted: false });
 
         // Calculate total order count
         const totalOrder = orders?.length;
