@@ -4,8 +4,8 @@ import { shopValidation } from "../utils/validates/shop.validate";
 import { insertShop } from "../controllers/shop.controller";
 import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdatePasswordByCurrentValidation, userUpdatePasswordValidation, userUpdateValidation } from "../utils/validates/user.validate";
 import { deleteUser, getPermission, getRole, getUser, getUserRolePermission, insertUser, login, register, updateUser, updateUserPassword, updateUserPasswordByCurrent } from "../controllers/user.controller";
-import { customerValidation, deleteCustomerValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
-import { deleteCustomer, getCustomer, insertCustomer, updateCustomer } from "../controllers/customer.controller";
+import { customerValidation, deleteCustomerValidation, getCustomerDetailOrderValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
+import { deleteCustomer, getCustomer, getCustomerDetailOrder, insertCustomer, updateCustomer } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
 import { categoryValidation, deleteCategoryValidation, updateCategoryValidation } from "../utils/validates/category.validate";
 import { deleteCategory, getActiveCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
@@ -13,8 +13,8 @@ import { deleteProduct, getProduct, insertProduct, updateProduct } from "../cont
 import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
 import { createOrderValidation, deleteOrderValidation, updateOrderValidation } from "../utils/validates/order.validate";
 import { createOrder, deleteOrder, getOrder, updateOrder } from "../controllers/order.controller";
-import { addSupplierValidation, deleteSupplierValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
-import { addSupplier, deleteSupplier, getSupplier, updateSupplier } from "../controllers/supplier.controller";
+import { addSupplierValidation, deleteSupplierValidation, getSupplierDetailOrderValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
+import { addSupplier, deleteSupplier, getSupplier, getSupplierDetailOrder, updateSupplier } from "../controllers/supplier.controller";
 import { createPurchaseOrderValidation, deletePurchaseOrderValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
 import { createPurchaseOrder, deletePurchaseOrder, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
 
@@ -56,6 +56,10 @@ router.put('/customer', authenticateToken, validateBody(updateCustomerValidation
 router.delete('/customer', authenticateToken, validateBody(deleteCustomerValidation, RouteSource?.Query), (req, res, next) => {
 	deleteCustomer(req, res).catch(next)
 })
+
+router.get('/customer/detail/order', authenticateToken, validateBody(getCustomerDetailOrderValidation, RouteSource?.Query), (req, res, next) => {
+	getCustomerDetailOrder(req, res).catch(next);
+});
 
 //Users
 router.post('/user', authenticateToken, validateBody(userInsertValidation), (req, res, next) => {
@@ -164,6 +168,10 @@ router.put('/supplier', authenticateToken, validateBody(updateSupplierValidation
 
 router.delete('/supplier', authenticateToken, validateBody(deleteSupplierValidation, RouteSource?.Query), (req, res, next) => {
 	deleteSupplier(req, res).catch(next);
+});
+
+router.get('/supplier/detail/order', authenticateToken, validateBody(getSupplierDetailOrderValidation, RouteSource?.Query), (req, res, next) => {
+	getSupplierDetailOrder(req, res).catch(next);
 });
 
 // Purchase Order

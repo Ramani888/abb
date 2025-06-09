@@ -14,3 +14,7 @@ export const updateSupplierValidation = {
 export const deleteSupplierValidation = {
     _id: 'required|string'
 }
+
+export const getSupplierDetailOrderValidation = {
+    _id: 'required|string'
+}

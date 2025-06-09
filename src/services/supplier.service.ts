@@ -1,3 +1,4 @@
+import { PurchaseOrder } from "../models/purchaseOrder.model";
 import { Supplier } from "../models/supplier.model";
 import { ISupplier } from "../types/supplier";
 import mongoose from "mongoose";
@@ -43,6 +44,44 @@ export const deleteSupplierData = async (_id: string) => {
         return result;
     } catch (error) {
         console.error('Error deleting supplier data:', error);
+        throw error;
+    }
+}
+
+export const getSupplierDetailOrderData = async (_id: string) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(_id?.toString());
+        const supplier = await Supplier.findById(documentId);
+        if (!supplier) {
+            throw new Error("Supplier not found");
+        }
+
+        // Get all orders for this supplier
+        const orders = await PurchaseOrder.find({ supplierId: _id });
+
+        // Calculate total order count
+        const totalOrder = orders?.length;
+
+        // Calculate total spent (assuming each order has a 'total' field)
+        const totalSpent = orders?.reduce((sum, order) => sum + (order?.total || 0), 0);
+
+        // Find last order date (assuming each order has a 'createdAt' field)
+        const lastOrderDate = orders?.length > 0
+            ? new Date(Math.max(...orders
+                .map(order => order?.captureDate)
+                .filter((date): date is Date => date instanceof Date)
+                .map(date => new Date(date).getTime())
+            ))
+            : null;
+
+        return {
+            ...supplier.toObject(),
+            orders: orders.map(order => order.toObject()),
+            totalOrder,
+            totalSpent,
+            lastOrderDate
+        };
+    } catch (error) {
         throw error;
     }
 }

@@ -2,7 +2,7 @@ import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
-import { deleteSupplierData, getSupplierData, insertSupplierData, updateSupplierData } from "../services/supplier.service";
+import { deleteSupplierData, getSupplierData, getSupplierDetailOrderData, insertSupplierData, updateSupplierData } from "../services/supplier.service";
 
 export const addSupplier = async (req: AuthorizedRequest, res: Response) => {
     try {
@@ -51,6 +51,23 @@ export const deleteSupplier = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.OK).json({ success: true, message: 'Supplier deleted successfully' });
     } catch (error) {
         console.error('Error deleting supplier:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const getSupplierDetailOrder = async (req: AuthorizedRequest, res: Response) => {
+    const { _id } = req.query;
+    const { userId } = req?.user;
+    try {
+        const userData = await getUserById(userId);
+        if (!userData) return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+
+        const supplierData = await getSupplierDetailOrderData(_id);
+        if (!supplierData) return res.status(StatusCodes.NOT_FOUND).json({ message: 'Supplier not found' });
+
+        return res.status(StatusCodes.OK).json({ success: true, data: supplierData });
+    } catch (error) {
+        console.error('Error getting supplier detail order:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }
