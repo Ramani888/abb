@@ -15,8 +15,32 @@ export const insertCustomerData = async (data: ICustomer) => {
 
 export const getCustomerData = async (ownerId: string) => {
     try {
-        const result = await Customer?.find({ ownerId: ownerId });
-        return result?.map((item) => item.toObject());
+        const customers = await Customer.find({ ownerId: ownerId });
+        const customerIds = customers?.map(c => c?._id);
+
+        // Fetch all orders for these customers
+        const orders = await Order.find({ customerId: { $in: customerIds }, isDeleted: false });
+
+        // Group orders by customerId
+        const orderStats: Record<string, { totalOrder: number, totalSpent: number }> = {};
+        orders.forEach(order => {
+            const cid = order.customerId.toString();
+            if (!orderStats[cid]) {
+                orderStats[cid] = { totalOrder: 0, totalSpent: 0 };
+            }
+            orderStats[cid].totalOrder += 1;
+            orderStats[cid].totalSpent += order.total || 0;
+        });
+
+        // Attach stats to each customer
+        return customers.map(customer => {
+            const stats = orderStats[customer._id.toString()] || { totalOrder: 0, totalSpent: 0 };
+            return {
+                ...customer.toObject(),
+                totalOrder: stats.totalOrder,
+                totalSpent: stats.totalSpent
+            };
+        });
     } catch (error) {
         throw error;
     }
