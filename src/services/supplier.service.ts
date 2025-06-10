@@ -16,8 +16,33 @@ export const insertSupplierData = async (data: ISupplier) => {
 
 export const getSupplierData = async (ownerId: string) => {
     try {
-        const suppliers = await Supplier.find({ ownerId, isDeleted: false }).sort({ captureDate: -1 });
-        return suppliers;
+        // Fetch all suppliers for the owner
+        const suppliers = await Supplier.find({ ownerId: ownerId, isDeleted: false });
+        const supplierIds = suppliers.map(s => s._id);
+
+        // Fetch all purchase orders for these suppliers
+        const orders = await PurchaseOrder.find({ supplierId: { $in: supplierIds }, isDeleted: false });
+
+        // Group orders by supplierId
+        const orderStats: Record<string, { totalOrder: number, totalSpent: number }> = {};
+        orders.forEach(order => {
+            const sid = order.supplierId.toString();
+            if (!orderStats[sid]) {
+                orderStats[sid] = { totalOrder: 0, totalSpent: 0 };
+            }
+            orderStats[sid].totalOrder += 1;
+            orderStats[sid].totalSpent += order.total || 0;
+        });
+
+        // Attach stats to each supplier
+        return suppliers.map(supplier => {
+            const stats = orderStats[supplier._id.toString()] || { totalOrder: 0, totalSpent: 0 };
+            return {
+                ...supplier.toObject(),
+                totalOrder: stats.totalOrder,
+                totalSpent: stats.totalSpent
+            };
+        });
     } catch (error) {
         console.error('Error fetching supplier data:', error);
         throw error;
