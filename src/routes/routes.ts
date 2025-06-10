@@ -11,12 +11,12 @@ import { categoryValidation, deleteCategoryValidation, updateCategoryValidation 
 import { deleteCategory, getActiveCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
 import { deleteProduct, getProduct, insertProduct, updateProduct } from "../controllers/product.controller";
 import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
-import { createOrderValidation, deleteOrderValidation, updateOrderValidation } from "../utils/validates/order.validate";
-import { createOrder, deleteOrder, getOrder, updateOrder } from "../controllers/order.controller";
+import { createOrderValidation, deleteOrderValidation, getAllOrderByCustomerIdValidation, updateOrderValidation } from "../utils/validates/order.validate";
+import { createOrder, deleteOrder, getAllOrderByCustomerId, getOrder, updateOrder } from "../controllers/order.controller";
 import { addSupplierValidation, deleteSupplierValidation, getSupplierDetailOrderValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
 import { addSupplier, deleteSupplier, getSupplier, getSupplierDetailOrder, updateSupplier } from "../controllers/supplier.controller";
-import { createPurchaseOrderValidation, deletePurchaseOrderValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
-import { createPurchaseOrder, deletePurchaseOrder, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
+import { createPurchaseOrderValidation, deletePurchaseOrderValidation, getAllPurchaseOrderBySupplierIdValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
+import { createPurchaseOrder, deletePurchaseOrder, getAllPurchaseOrderBySupplierId, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
 
 enum RouteSource {
     Body,
@@ -153,6 +153,10 @@ router.delete('/order', authenticateToken, validateBody(deleteOrderValidation, R
 	deleteOrder(req, res).catch(next);
 });
 
+router.get('/order/customer/all', authenticateToken, validateBody(getAllOrderByCustomerIdValidation, RouteSource?.Query), (req, res, next) => {
+	getAllOrderByCustomerId(req, res).catch(next);
+});
+
 // Supplier
 router.post('/supplier', authenticateToken, validateBody(addSupplierValidation), (req, res, next) => {
 	addSupplier(req, res).catch(next);
@@ -189,6 +193,10 @@ router.put('/purchase-order', authenticateToken, validateBody(updatePurchaseOrde
 
 router.delete('/purchase-order', authenticateToken, validateBody(deletePurchaseOrderValidation, RouteSource?.Query), (req, res, next) => {
 	deletePurchaseOrder(req, res).catch(next);
+});
+
+router.get('/purchase-order/supplier/all', authenticateToken, validateBody(getAllPurchaseOrderBySupplierIdValidation, RouteSource?.Query), (req, res, next) => {
+	getAllPurchaseOrderBySupplierId(req, res).catch(next);
 });
 
 export default router;

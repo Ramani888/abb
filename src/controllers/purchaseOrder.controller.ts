@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
 import { generateInvoiceNumber } from "../utils/helpers/general";
-import { createPurchaseOrderData, deletePurchaseOrderData, getPurchaseOrderData, updatePurchaseOrderData } from "../services/purchaseOrder.service";
+import { createPurchaseOrderData, deletePurchaseOrderData, getAllPurchaseOrderDataBySupplierId, getPurchaseOrderData, updatePurchaseOrderData } from "../services/purchaseOrder.service";
 
 export const createPurchaseOrder = async (req: AuthorizedRequest, res: Response) => {
     const { userId } = req.user;
@@ -61,6 +61,17 @@ export const deletePurchaseOrder = async (req: AuthorizedRequest, res: Response)
         return res.status(StatusCodes.OK).json({ success: true, message: 'Purchase order deleted successfully' });
     } catch (error) {
         console.log('Error deleting purchase order:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const getAllPurchaseOrderBySupplierId = async (req: AuthorizedRequest, res: Response) => {
+    const { _id } = req.query;
+    try {
+        const data = await getAllPurchaseOrderDataBySupplierId(_id);
+        return res.status(StatusCodes.OK).json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching purchase orders by supplier ID:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
     }
 }

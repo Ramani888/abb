@@ -197,3 +197,13 @@ export const deletePurchaseOrderData = async (_id: string) => {
         throw error;
     }
 }
+
+export const getAllPurchaseOrderDataBySupplierId = async (supplierId: string) => {
+    try {
+        const orders = await PurchaseOrder.find({ supplierId, isDeleted: false });
+        return orders;
+    } catch (error) {
+        console.error('Error fetching purchase orders by supplier ID:', error);
+        throw error;
+    }
+}

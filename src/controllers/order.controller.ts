@@ -2,7 +2,7 @@ import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
-import { createOrderData, deleteOrderData, getOrderData, updateOrderData } from "../services/order.service";
+import { createOrderData, deleteOrderData, getAllOrderDataByCustomerId, getOrderData, updateOrderData } from "../services/order.service";
 import { generateInvoiceNumber } from "../utils/helpers/general";
 
 export const createOrder = async (req: AuthorizedRequest, res: Response) => {
@@ -61,6 +61,17 @@ export const deleteOrder = async (req: AuthorizedRequest, res: Response) => {
         return res.status(StatusCodes.OK).json({ success: true, message: 'Order deleted successfully' });
     } catch (error) {
         console.log('Error deleting order:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const getAllOrderByCustomerId = async (req: AuthorizedRequest, res: Response) => {
+    try {
+        const { _id } = req?.query;
+        const orderData = await getAllOrderDataByCustomerId(_id);
+        return res.status(StatusCodes.OK).json({ success: true, data: orderData });
+    } catch (error) {
+        console.error('Error fetching orders by customer ID:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
     }
 }

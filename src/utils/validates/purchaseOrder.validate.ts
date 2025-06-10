@@ -26,3 +26,7 @@ export const updatePurchaseOrderValidation = {
 export const deletePurchaseOrderValidation = {
     _id: 'required|string'
 }
+
+export const getAllPurchaseOrderBySupplierIdValidation = {
+    _id: 'required|string'
+}

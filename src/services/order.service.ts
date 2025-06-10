@@ -199,3 +199,13 @@ export const deleteOrderData = async (_id: string) => {
         throw error;
     }
 }
+
+export const getAllOrderDataByCustomerId = async (customerId: string) => {
+    try {
+        const orders = await Order.find({ customerId, isDeleted: false });
+        return orders;
+    } catch (error) {
+        console.error('Error fetching orders by customer ID:', error);
+        throw error;
+    }
+}

@@ -27,3 +27,7 @@ export const updateOrderValidation = {
 export const deleteOrderValidation = {
     _id: 'required|string'
 }
+
+export const getAllOrderByCustomerIdValidation = {
+    _id: 'required|string'
+}
