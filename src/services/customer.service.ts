@@ -130,8 +130,48 @@ export const createCustomerPaymentData = async (data: ICustomerPayment) => {
 
 export const getCustomerPaymentData = async (ownerId: string) => {
     try {
-        const payments = await CustomerPayment.find({ ownerId: ownerId, isDeleted: false });
-        return payments;
+        const result = await CustomerPayment?.aggregate([
+            {
+                $match: { ownerId, isDeleted: false }
+            },
+            {
+                $lookup: {
+                    from: "Customer",
+                    let: { customerId: "$customerId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$_id", { $toObjectId: "$$customerId" }] }
+                            }
+                        }
+                    ],
+                    as: "customerData"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$customerData",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userId: 1,
+                    ownerId: 1,
+                    customerId: 1,
+                    amount: 1,
+                    paymentType: 1,
+                    paymentMode: 1,
+                    captureDate: 1,
+                    isDeleted: 1,
+                    customerData: "$customerData",
+                    createdAt: 1,
+                    updatedAt: 1
+                }
+            }
+        ]);
+        return result;
     } catch (error) {
         throw error;
     }
