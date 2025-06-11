@@ -21,3 +21,18 @@ export const deleteCustomerValidation = {
 export const getCustomerDetailOrderValidation = {
     _id: 'required|string'
 }
+
+export const customerPaymentValidation = {
+    customerId: 'required|string',
+    amount: 'required|numeric',
+    paymentType: 'required|string',
+    paymentMode: 'required|string'
+}
+
+export const updateCustomerPaymentValidation = {
+    _id: 'required|string'
+}
+
+export const deleteCustomerPaymentValidation = {
+    _id: 'required|string'
+}

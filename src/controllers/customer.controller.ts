@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { deleteCustomerData, getCustomerByNumberAndOwnerId, getCustomerData, getCustomerDetailOrderData, insertCustomerData, updateCustomerData } from "../services/customer.service";
+import { createCustomerPaymentData, deleteCustomerData, deleteCustomerPaymentData, getCustomerByNumberAndOwnerId, getCustomerData, getCustomerDetailOrderData, getCustomerPaymentData, insertCustomerData, updateCustomerData, updateCustomerPaymentData } from "../services/customer.service";
 import { getUserById } from "../services/user.service";
 
 export const insertCustomer = async (req: AuthorizedRequest, res: Response) => {
@@ -69,6 +69,56 @@ export const getCustomerDetailOrder = async (req: AuthorizedRequest, res: Respon
         return res.status(StatusCodes.OK).json({ success: true, data: customerData });
     } catch (error) {
         console.error('Error getting customer detail order:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const createCustomerPayment = async (req: AuthorizedRequest, res: Response) => {
+    const { userId } = req?.user;
+    const bodyData = req?.body;
+    try {
+        const userData = await getUserById(userId);
+        if (!userData) return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+
+        await createCustomerPaymentData({...bodyData, userId, ownerId: userData?.ownerId});
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Customer payment created successfully' });
+    } catch (error) {
+        console.error('Error creating customer payment:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const getCustomerPayment = async (req: AuthorizedRequest, res: Response) => {
+    const { userId } = req.user;
+    try {
+        const userData = await getUserById(userId);
+        const data = await getCustomerPaymentData(userData?.ownerId ?? '');
+        return res.status(StatusCodes.OK).json({ success: true, data });
+    } catch (error) {
+        console.error('Error getting customer payment:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const updateCustomerPayment = async (req: AuthorizedRequest, res: Response) => {
+    const bodyData = req?.body;
+    const { userId } = req?.user;
+    try {
+        await updateCustomerPaymentData({...bodyData, userId});
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Customer payment updated successfully' });
+    } catch (error) {
+        console.error('Error updating customer payment:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const deleteCustomerPayment = async (req: AuthorizedRequest, res: Response) => {
+    const { _id } = req.query;
+    try {
+        await deleteCustomerPaymentData(_id);
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Customer payment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting customer payment:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }

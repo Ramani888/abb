@@ -4,8 +4,8 @@ import { shopValidation } from "../utils/validates/shop.validate";
 import { insertShop } from "../controllers/shop.controller";
 import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdatePasswordByCurrentValidation, userUpdatePasswordValidation, userUpdateValidation } from "../utils/validates/user.validate";
 import { deleteUser, getPermission, getRole, getUser, getUserRolePermission, insertUser, login, register, updateUser, updateUserPassword, updateUserPasswordByCurrent } from "../controllers/user.controller";
-import { customerValidation, deleteCustomerValidation, getCustomerDetailOrderValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
-import { deleteCustomer, getCustomer, getCustomerDetailOrder, insertCustomer, updateCustomer } from "../controllers/customer.controller";
+import { customerPaymentValidation, customerValidation, deleteCustomerPaymentValidation, deleteCustomerValidation, getCustomerDetailOrderValidation, updateCustomerPaymentValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
+import { createCustomerPayment, deleteCustomer, deleteCustomerPayment, getCustomer, getCustomerDetailOrder, getCustomerPayment, insertCustomer, updateCustomer, updateCustomerPayment } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
 import { categoryValidation, deleteCategoryValidation, updateCategoryValidation } from "../utils/validates/category.validate";
 import { deleteCategory, getActiveCategory, getCategory, insertCategory, updateCategory } from "../controllers/category.controller";
@@ -197,6 +197,23 @@ router.delete('/purchase-order', authenticateToken, validateBody(deletePurchaseO
 
 router.get('/purchase-order/supplier/all', authenticateToken, validateBody(getAllPurchaseOrderBySupplierIdValidation, RouteSource?.Query), (req, res, next) => {
 	getAllPurchaseOrderBySupplierId(req, res).catch(next);
+});
+
+// Customer Payment
+router.post('/customer-payment', authenticateToken, validateBody(customerPaymentValidation), (req, res, next) => {
+	createCustomerPayment(req, res).catch(next);
+});
+
+router.get('/customer-payment', authenticateToken, (req, res, next) => {
+	getCustomerPayment(req, res).catch(next);
+});
+
+router.put('/customer-payment', authenticateToken, validateBody(updateCustomerPaymentValidation), (req, res, next) => {
+	updateCustomerPayment(req, res).catch(next);
+});
+
+router.delete('/customer-payment', authenticateToken, validateBody(deleteCustomerPaymentValidation, RouteSource?.Query), (req, res, next) => {
+	deleteCustomerPayment(req, res).catch(next);
 });
 
 export default router;

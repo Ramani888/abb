@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { Customer } from "../models/customer.model";
-import { ICustomer } from "../types/customer";
+import { ICustomer, ICustomerPayment } from "../types/customer";
 import { Order } from "../models/order.model";
+import { CustomerPayment } from "../models/customerPayment.model";
 
 export const insertCustomerData = async (data: ICustomer) => {
     try {
@@ -111,6 +112,48 @@ export const deleteCustomerData = async (_id: string) => {
     try {
         const documentId = new mongoose.Types.ObjectId(_id?.toString());
         const result = await Customer.findByIdAndDelete(documentId);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const createCustomerPaymentData = async (data: ICustomerPayment) => {
+    try {
+        const newData = new CustomerPayment(data);
+        await newData.save();
+        return;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getCustomerPaymentData = async (ownerId: string) => {
+    try {
+        const payments = await CustomerPayment.find({ ownerId: ownerId, isDeleted: false });
+        return payments;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updateCustomerPaymentData = async (data: ICustomerPayment) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
+        const result = await CustomerPayment.findByIdAndUpdate(documentId, data, {
+            new: true,
+            runValidators: true
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteCustomerPaymentData = async (_id: string) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(_id?.toString());
+        const result = await CustomerPayment.findByIdAndUpdate(documentId, { isDeleted: true }, { new: true });
         return result;
     } catch (error) {
         throw error;

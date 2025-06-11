@@ -14,3 +14,17 @@ export interface ICustomer {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export interface ICustomerPayment {
+    _id?: ObjectId;
+    ownerId: string;
+    userId: string;
+    customerId: string;
+    amount: number;
+    paymentType: string; // e.g., 'cash', 'credit', 'debit'
+    paymentMode: string; // e.g., 'online', 'offline'
+    captureDate?: Date;
+    isDeleted?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
