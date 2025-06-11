@@ -2,7 +2,7 @@ import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
-import { deleteSupplierData, getSupplierData, getSupplierDetailOrderData, insertSupplierData, updateSupplierData } from "../services/supplier.service";
+import { createSupplierPaymentData, deleteSupplierData, deleteSupplierPaymentData, getSupplierData, getSupplierDetailOrderData, getSupplierPaymentData, insertSupplierData, updateSupplierData, updateSupplierPaymentData } from "../services/supplier.service";
 
 export const addSupplier = async (req: AuthorizedRequest, res: Response) => {
     try {
@@ -68,6 +68,57 @@ export const getSupplierDetailOrder = async (req: AuthorizedRequest, res: Respon
         return res.status(StatusCodes.OK).json({ success: true, data: supplierData });
     } catch (error) {
         console.error('Error getting supplier detail order:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const createSupplierPayment = async (req: AuthorizedRequest, res: Response) => {
+    const { userId } = req?.user;
+    const bodyData = req?.body;
+    try {
+        const userData = await getUserById(userId);
+        if (!userData) return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+
+        await createSupplierPaymentData({...bodyData, userId, ownerId: userData?.ownerId});
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Supplier payment created successfully' });
+    } catch (error) {
+        console.error('Error creating supplier payment:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const getSupplierPayment = async (req: AuthorizedRequest, res: Response) => {
+    const { userId } = req.user;
+    try {
+        const userData = await getUserById(userId);
+        // Assuming you have a service to fetch supplier payment data
+        const data = await getSupplierPaymentData(userData?.ownerId ?? '');
+        return res.status(StatusCodes.OK).json({ success: true, data });
+    } catch (error) {
+        console.error('Error getting supplier payment:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const updateSupplierPayment = async (req: AuthorizedRequest, res: Response) => {
+    const bodyData = req?.body;
+    const { userId } = req?.user;
+    try {
+        await updateSupplierPaymentData({ ...bodyData, userId });
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Supplier payment updated successfully' });
+    } catch (error) {
+        console.error('Error updating supplier payment:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}
+
+export const deleteSupplierPayment = async (req: AuthorizedRequest, res: Response) => {
+    const { _id } = req.query;
+    try {
+        await deleteSupplierPaymentData(_id);
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Supplier payment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting supplier payment:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }

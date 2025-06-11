@@ -18,3 +18,18 @@ export const deleteSupplierValidation = {
 export const getSupplierDetailOrderValidation = {
     _id: 'required|string'
 }
+
+export const supplierPaymentValidation = {
+    supplierId: 'required|string',
+    amount: 'required|numeric',
+    paymentType: 'required|string',
+    paymentMode: 'required|string'
+}
+
+export const updateSupplierPaymentValidation = {
+    _id: 'required|string'
+}
+
+export const deleteSupplierPaymentValidation = {
+    _id: 'required|string'
+}

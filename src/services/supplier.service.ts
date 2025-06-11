@@ -1,6 +1,8 @@
+import e from "express";
 import { PurchaseOrder } from "../models/purchaseOrder.model";
 import { Supplier } from "../models/supplier.model";
-import { ISupplier } from "../types/supplier";
+import { SupplierPayment } from "../models/supplierPayment.model";
+import { ISupplier, ISupplierPayment } from "../types/supplier";
 import mongoose from "mongoose";
 
 export const insertSupplierData = async (data: ISupplier) => {
@@ -106,6 +108,88 @@ export const getSupplierDetailOrderData = async (_id: string) => {
             totalSpent,
             lastOrderDate
         };
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const createSupplierPaymentData = async (data: ISupplierPayment) => {
+    try {
+        const newData = new SupplierPayment(data);
+        await newData.save();
+        return;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getSupplierPaymentData = async (ownerId: string) => {
+    try {
+        const result = await SupplierPayment?.aggregate([
+            {
+                $match: { ownerId, isDeleted: false }
+            },
+            {
+                $lookup: {
+                    from: "Supplier",
+                    let: { supplierId: "$supplierId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$_id", { $toObjectId: "$$supplierId" }] }
+                            }
+                        }
+                    ],
+                    as: "supplierData"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$supplierData",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userId: 1,
+                    ownerId: 1,
+                    supplierId: 1,
+                    amount: 1,
+                    paymentType: 1,
+                    paymentMode: 1,
+                    captureDate: 1,
+                    isDeleted: 1,
+                    supplierData: "$supplierData",
+                    createdAt: 1,
+                    updatedAt: 1
+                }
+            }
+        ]);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updateSupplierPaymentData = async (data: ISupplierPayment) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
+        const result = await SupplierPayment.findByIdAndUpdate(documentId, data, {
+            new: true,
+            runValidators: true
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteSupplierPaymentData = async (_id: string) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(_id?.toString());
+        const result = await SupplierPayment.findByIdAndUpdate(documentId, { isDeleted: true }, { new: true });
+        return result;
     } catch (error) {
         throw error;
     }

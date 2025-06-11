@@ -13,8 +13,8 @@ import { deleteProduct, getProduct, insertProduct, updateProduct } from "../cont
 import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
 import { createOrderValidation, deleteOrderValidation, getAllOrderByCustomerIdValidation, updateOrderValidation } from "../utils/validates/order.validate";
 import { createOrder, deleteOrder, getAllOrderByCustomerId, getOrder, updateOrder } from "../controllers/order.controller";
-import { addSupplierValidation, deleteSupplierValidation, getSupplierDetailOrderValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
-import { addSupplier, deleteSupplier, getSupplier, getSupplierDetailOrder, updateSupplier } from "../controllers/supplier.controller";
+import { addSupplierValidation, deleteSupplierPaymentValidation, deleteSupplierValidation, getSupplierDetailOrderValidation, supplierPaymentValidation, updateSupplierPaymentValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
+import { addSupplier, createSupplierPayment, deleteSupplier, deleteSupplierPayment, getSupplier, getSupplierDetailOrder, getSupplierPayment, updateSupplier, updateSupplierPayment } from "../controllers/supplier.controller";
 import { createPurchaseOrderValidation, deletePurchaseOrderValidation, getAllPurchaseOrderBySupplierIdValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
 import { createPurchaseOrder, deletePurchaseOrder, getAllPurchaseOrderBySupplierId, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
 
@@ -216,4 +216,20 @@ router.delete('/customer-payment', authenticateToken, validateBody(deleteCustome
 	deleteCustomerPayment(req, res).catch(next);
 });
 
+// Supplier Payment
+router.post('/supplier-payment', authenticateToken, validateBody(supplierPaymentValidation), (req, res, next) => {
+	createSupplierPayment(req, res).catch(next);
+});
+
+router.get('/supplier-payment', authenticateToken, (req, res, next) => {
+	getSupplierPayment(req, res).catch(next);
+});
+
+router.put('/supplier-payment', authenticateToken, validateBody(updateSupplierPaymentValidation), (req, res, next) => {
+	updateSupplierPayment(req, res).catch(next);
+});
+
+router.delete('/supplier-payment', authenticateToken, validateBody(deleteSupplierPaymentValidation, RouteSource?.Query), (req, res, next) => {
+	deleteSupplierPayment(req, res).catch(next);
+});
 export default router;
