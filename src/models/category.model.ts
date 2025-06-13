@@ -23,6 +23,10 @@ const CategorySchema = new Schema({
         type: Boolean,
         required: true,
     },
+    captureDate: {
+        type: Date,
+        default: Date.now,
+    }
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');
