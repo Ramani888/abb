@@ -79,6 +79,7 @@ export const getCategoryData = async (ownerId: string) => {
                     name: 1,
                     description: 1,
                     isActive: 1,
+                    captureDate: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     productCount: 1
