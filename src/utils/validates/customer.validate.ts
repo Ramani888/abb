@@ -3,7 +3,8 @@ export const customerValidation = {
     email: 'required|email',
     number: 'required|numeric',
     address: 'required|string',
-    customerType: 'required|string'
+    customerType: 'required|string',
+    isActive: 'required|boolean'
 }
 
 // export const getCustomerValidation = {

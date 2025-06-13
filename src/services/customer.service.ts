@@ -16,7 +16,7 @@ export const insertCustomerData = async (data: ICustomer) => {
 
 export const getCustomerData = async (ownerId: string) => {
     try {
-        const customers = await Customer.find({ ownerId: ownerId });
+        const customers = await Customer.find({ ownerId: ownerId, isActive: true, isDeleted: false });
         const customerIds = customers?.map(c => c?._id);
 
         // Fetch all orders for these customers
@@ -111,7 +111,7 @@ export const updateCustomerData = async (data: ICustomer) => {
 export const deleteCustomerData = async (_id: string) => {
     try {
         const documentId = new mongoose.Types.ObjectId(_id?.toString());
-        const result = await Customer.findByIdAndDelete(documentId);
+        const result = await Customer.findByIdAndUpdate(documentId, { isDeleted: true }, { new: true });
         return result;
     } catch (error) {
         throw error;

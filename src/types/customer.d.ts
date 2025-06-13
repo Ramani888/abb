@@ -11,6 +11,8 @@ export interface ICustomer {
     creditLimit?: number;
     paymentTerms?: string;
     captureDate?: Date;
+    isActive?: boolean;
+    isDeleted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }

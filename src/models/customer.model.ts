@@ -39,13 +39,21 @@ const CustomerSchema = new Schema({
     },
     paymentTerms: {
         type: String
-    }
-    ,
+    },
     captureDate: {
         type: Date,
         required: false,
         default: Date.now
     },
+    isActive: {
+        type: Boolean,
+        required: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        required: false,
+        default: false
+    }
 }, {timestamps: true});
 
 const dbConnection = mongoose.connection.useDb(env.MONGODB_DATABASE ?? '');
