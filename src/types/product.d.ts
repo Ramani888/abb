@@ -28,3 +28,18 @@ export interface IProduct {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface IStockLog {
+  _id?: string;
+  ownerId: string;
+  userId: string;
+  productId: string;
+  variantId: string;
+  quantity: number;
+  type: string;
+  quantity: number; // +ve for add, -ve for subtract
+  balanceAfter: number; // stock level after this change
+  note?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

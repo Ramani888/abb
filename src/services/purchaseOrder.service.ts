@@ -207,3 +207,14 @@ export const getAllPurchaseOrderDataBySupplierId = async (supplierId: string) =>
         throw error;
     }
 }
+
+export const getPurchaseOrderById = async (_id: string) => {
+    try {
+        const documentId = new mongoose.Types.ObjectId(_id?.toString());
+        const order = await PurchaseOrder.findById(documentId);
+        return order;
+    } catch (error) {
+        console.error('Error fetching purchase order by ID:', error);
+        throw error;
+    }
+}
