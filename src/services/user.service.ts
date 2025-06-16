@@ -75,7 +75,7 @@ export const updateUserRoleData = async (ownerId: string, userId: string, roleId
 
 export const insertUserRolePermissionData = async (userId: string, roleId: string, ownerId: string, permissionId: string) => {
     try {
-        const newData = new UserRolePermission({ userId, roleId, ownerId, permissionId });
+        const newData = new UserRolePermission({ ownerId, userId, roleId, permissionId });
         const savedData = await newData.save();
         return savedData;
     } catch (error) {

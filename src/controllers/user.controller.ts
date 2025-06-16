@@ -50,7 +50,7 @@ export const register = async (req: AuthorizedRequest, res: Response) => {
         const role = await insertUserRoleData(user?._id?.toString(), RoleType?.Administrator, owner?._id?.toString());
         const allPermission = await getAllPermission();
         allPermission?.map(async (permission) => {
-            await insertUserRolePermissionData(user?._id?.toString(), role?._id?.toString(), owner?._id?.toString(), permission?._id?.toString());
+            await insertUserRolePermissionData(user?._id?.toString(), RoleType?.Administrator, owner?._id?.toString(), permission?._id?.toString());
         });
 
         return res.status(StatusCodes.OK).json({ message: 'User registered successfully' });
