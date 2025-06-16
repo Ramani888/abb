@@ -4,3 +4,5 @@ export enum RoleType {
     Salesperson = '67e68b0bc0d5e9eb3683fc5b',
     InventoryManager = '67e68b23c0d5e9eb3683fc5c'
 }
+
+export const test = 'test';
