@@ -43,7 +43,7 @@ export const register = async (req: AuthorizedRequest, res: Response) => {
             password: newPassword as string
         };
 
-        const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
+        const existingUser = await getUserByNumber(bodyData?.number);
         if (existingUser) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register as a user.' });
 
         const user = await insertUserData(userData);
