@@ -15,6 +15,9 @@ export const register = async (req: AuthorizedRequest, res: Response) => {
         const existingOwner = await getOwnerByNumber(bodyData?.number);
         if (existingOwner) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register as a owner.' });
 
+        const existingUser = await getUserByNumber(bodyData?.number);
+        if (existingUser) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register as a user.' });
+
         //Encrypt Password
         const newPassword = await encryptPassword(bodyData?.password)
         bodyData.password = newPassword;
@@ -42,9 +45,6 @@ export const register = async (req: AuthorizedRequest, res: Response) => {
             ownerId: owner?._id?.toString(),
             password: newPassword as string
         };
-
-        const existingUser = await getUserByNumber(bodyData?.number);
-        if (existingUser) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already register as a user.' });
 
         const user = await insertUserData(userData);
         const role = await insertUserRoleData(user?._id?.toString(), RoleType?.Administrator, owner?._id?.toString());
