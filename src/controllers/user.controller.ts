@@ -6,6 +6,7 @@ import { comparePassword, encryptPassword, generateRandomPassword } from "../uti
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
 import { get } from "mongoose";
+import { sendMail } from "../utils/helpers/mailer";
 const env = process.env;
 
 export const register = async (req: AuthorizedRequest, res: Response) => {
@@ -116,6 +117,19 @@ export const insertUser = async (req: AuthorizedRequest, res: Response) => {
         bodyData?.permissionIds?.map(async (permissionId: string) => {
             await insertUserRolePermissionData(user?._id?.toString(), bodyData?.roleId, userData?.ownerId ?? '', permissionId);
         });
+
+        // Send welcome email
+        if (bodyData?.email) {
+            await sendMail(
+                bodyData.email,
+                "Welcome to Agro Management System",
+                `<h3>Hello ${bodyData.name},</h3><p>Your account has been successfully created.</p>
+                <p>Your login credentials are:</p>
+                <p><strong>Number:</strong> ${bodyData.number}</p>
+                <p><strong>Password:</strong> ${randomPassword}</p>
+                `
+            );
+        }
         
         return res.status(StatusCodes.OK).json({ message: 'User inserted successfully' });
     } catch (error) {
