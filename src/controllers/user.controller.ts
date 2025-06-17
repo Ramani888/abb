@@ -1,7 +1,7 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { deleteUserData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, getUserRolePermissionData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateOwnerData, updateUserData, updateUserRoleData } from "../services/user.service";
+import { deleteUserData, deleteUserRoleData, deleteUserRolePermissionData, getAllPermission, getOwnerById, getOwnerByNumber, getRoleData, getUserById, getUserByNumber, getUserByNumberAndOwnerId, getUserData, getUserRolePermissionData, insertUserData, insertUserRoleData, insertUserRolePermissionData, registerData, updateOwnerData, updateUserData, updateUserRoleData } from "../services/user.service";
 import { comparePassword, encryptPassword, generateRandomPassword } from "../utils/helpers/general";
 import jwt from 'jsonwebtoken';
 import { RoleType } from "../utils/constants/user";
@@ -257,7 +257,14 @@ export const updateUserPasswordByCurrent = async (req: AuthorizedRequest, res: R
 export const deleteUser = async (req: AuthorizedRequest, res: Response) => {
     const { _id } = req?.query;
     try {
+        const userData = await getUserById(_id);
         await deleteUserData(_id);
+
+        // Delete user role and permissions
+        await deleteUserRolePermissionData(userData?.ownerId ?? '', _id?.toString());
+
+        // Delete user role
+        await deleteUserRoleData(userData?.ownerId ?? '', _id?.toString());
         return res.status(StatusCodes.OK).json({ message: 'User deleted successfully' });
     } catch (error) {
         console.error('Error deleting user:', error);
