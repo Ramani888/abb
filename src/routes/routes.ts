@@ -2,8 +2,8 @@ import express from "express";
 import { validateBody } from "../middleware/bodyValidate.middleware";
 import { shopValidation } from "../utils/validates/shop.validate";
 import { insertShop } from "../controllers/shop.controller";
-import { loginValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdatePasswordByCurrentValidation, userUpdatePasswordValidation, userUpdateValidation } from "../utils/validates/user.validate";
-import { deleteUser, getPermission, getRole, getUser, getUserRolePermission, insertUser, login, register, updateUser, updateUserPassword, updateUserPasswordByCurrent } from "../controllers/user.controller";
+import { loginValidation, ownerUpdateValidation, registerValidation, userDeleteValidation, userInsertValidation, userUpdatePasswordByCurrentValidation, userUpdatePasswordValidation, userUpdateValidation } from "../utils/validates/user.validate";
+import { deleteUser, getPermission, getRole, getUser, getUserRolePermission, insertUser, login, register, updateOwner, updateUser, updateUserPassword, updateUserPasswordByCurrent } from "../controllers/user.controller";
 import { customerPaymentValidation, customerValidation, deleteCustomerPaymentValidation, deleteCustomerValidation, getCustomerDetailOrderValidation, updateCustomerPaymentValidation, updateCustomerValidation } from "../utils/validates/customer.validate";
 import { createCustomerPayment, deleteCustomer, deleteCustomerPayment, getCustomer, getCustomerDetailOrder, getCustomerPayment, insertCustomer, updateCustomer, updateCustomerPayment } from "../controllers/customer.controller";
 import { authenticateToken } from "../utils/helpers/general";
@@ -39,6 +39,11 @@ router.post('/register', validateBody(registerValidation), (req, res, next) => {
 router.post('/login', validateBody(loginValidation), (req, res, next) => {
 	login(req, res).catch(next);
 })
+
+// Owner
+router.put('/owner', authenticateToken, validateBody(ownerUpdateValidation), (req, res, next) => {
+	updateOwner(req, res).catch(next);
+});
 
 //Customers
 router.post('/customer', authenticateToken, validateBody(customerValidation), (req, res, next) => {

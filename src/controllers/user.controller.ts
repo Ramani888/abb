@@ -303,3 +303,26 @@ export const getUserRolePermission = async (req: AuthorizedRequest, res: Respons
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
 }
+
+export const updateOwner = async (req: AuthorizedRequest, res: Response) => {
+    const bodyData = req.body;
+    try {
+        const { userId } = req.user;
+        const userData = await getUserById(userId);
+        const ownerData = await getOwnerById(userData?.ownerId ?? '');
+
+        // Check if another owner with the same number exists (excluding current owner)
+        const existingOwner = await getOwnerByNumber(bodyData?.number);
+        if (existingOwner && existingOwner?._id.toString() !== ownerData?._id.toString()) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered as an owner.' });
+        }
+
+        // Update owner data
+        await updateOwnerData({ ...ownerData, ...bodyData });
+
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Owner updated successfully' });
+    } catch (error) {
+        console.error('Error updating owner:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
+    }
+}

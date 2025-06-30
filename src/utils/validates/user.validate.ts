@@ -42,3 +42,7 @@ export const userUpdatePasswordByCurrentValidation = {
 export const userDeleteValidation = {
     _id: 'required|string',
 }
+
+export const ownerUpdateValidation = {
+    _id: 'required|string',
+}
