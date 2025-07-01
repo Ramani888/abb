@@ -160,7 +160,12 @@ export const updateUser = async (req: AuthorizedRequest, res: Response) => {
         // Check if another user with the same number exists (excluding current user)
         const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
         if (existingUser && existingUser._id.toString() !== bodyData._id) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered.' });
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered as a user.' });
+        }
+
+        const existingOwner = await getOwnerByNumber(bodyData?.number);
+        if (existingOwner && existingOwner?._id.toString() !== ownerData?._id.toString()) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered as an owner.' });
         }
 
         // Update user data
