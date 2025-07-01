@@ -310,6 +310,7 @@ export const updateOwner = async (req: AuthorizedRequest, res: Response) => {
         const { userId } = req.user;
         const userData = await getUserById(userId);
         const ownerData = await getOwnerById(userData?.ownerId ?? '');
+        const ownerUserData = await getUserByNumber(Number(ownerData?.number));
 
         // Check if another owner with the same number exists (excluding current owner)
         const existingOwner = await getOwnerByNumber(bodyData?.number);
@@ -317,8 +318,18 @@ export const updateOwner = async (req: AuthorizedRequest, res: Response) => {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered as an owner.' });
         }
 
+        const existingUser = await getUserByNumberAndOwnerId(userData?.ownerId ?? '', bodyData?.number);
+        if (existingUser && existingUser?._id.toString() !== ownerUserData?._id.toString()) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'This number is already registered as a user.' });
+        }
+
         // Update owner data
         await updateOwnerData({ ...ownerData, ...bodyData });
+
+        if (Number(ownerData?.number) === Number(ownerUserData?.number)) {
+            // Update user data if the number or email has changed
+            await updateUserData({ _id: ownerUserData?._id, name: bodyData?.name, number: bodyData?.number, email: bodyData?.email });
+        }
 
         return res.status(StatusCodes.OK).json({ success: true, message: 'Owner updated successfully' });
     } catch (error) {
