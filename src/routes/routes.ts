@@ -17,6 +17,8 @@ import { addSupplierValidation, deleteSupplierPaymentValidation, deleteSupplierV
 import { addSupplier, createSupplierPayment, deleteSupplier, deleteSupplierPayment, getSupplier, getSupplierDetailOrder, getSupplierPayment, updateSupplier, updateSupplierPayment } from "../controllers/supplier.controller";
 import { createPurchaseOrderValidation, deletePurchaseOrderValidation, getAllPurchaseOrderBySupplierIdValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
 import { createPurchaseOrder, deletePurchaseOrder, getAllPurchaseOrderBySupplierId, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
+import { deleteNotification, getNotification, updateNotification } from "../controllers/notification.controller";
+import { deleteNotificationValidation, updateNotificationValidation } from "../utils/validates/notification.validate";
 
 enum RouteSource {
     Body,
@@ -237,4 +239,18 @@ router.put('/supplier-payment', authenticateToken, validateBody(updateSupplierPa
 router.delete('/supplier-payment', authenticateToken, validateBody(deleteSupplierPaymentValidation, RouteSource?.Query), (req, res, next) => {
 	deleteSupplierPayment(req, res).catch(next);
 });
+
+// Notification
+router.get('/notification', authenticateToken, (req, res, next) => {
+	getNotification(req, res).catch(next);
+});
+
+router.put('/notification', authenticateToken, validateBody(updateNotificationValidation, RouteSource?.Query), (req, res, next) => {
+	updateNotification(req, res).catch(next);
+});
+
+router.delete('/notification', authenticateToken, validateBody(deleteNotificationValidation, RouteSource?.Query), (req, res, next) => {
+	deleteNotification(req, res).catch(next);
+});
+
 export default router;

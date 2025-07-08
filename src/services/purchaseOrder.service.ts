@@ -6,7 +6,7 @@ export const createPurchaseOrderData = async (data: IPurchaseOrder) => {
     try {
         const newData = new PurchaseOrder(data);
         await newData.save();
-        return;
+        return newData;
     } catch (error) {
         console.error('Error creating purchase order data:', error);
         throw error;

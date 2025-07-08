@@ -1,8 +1,9 @@
 import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
-import { createCustomerPaymentData, deleteCustomerData, deleteCustomerPaymentData, getCustomerByNumberAndOwnerId, getCustomerData, getCustomerDetailOrderData, getCustomerPaymentData, insertCustomerData, updateCustomerData, updateCustomerPaymentData } from "../services/customer.service";
+import { createCustomerPaymentData, deleteCustomerData, deleteCustomerPaymentData, getCustomerById, getCustomerByNumberAndOwnerId, getCustomerData, getCustomerDetailOrderData, getCustomerPaymentData, insertCustomerData, updateCustomerData, updateCustomerPaymentData } from "../services/customer.service";
 import { getUserById } from "../services/user.service";
+import { insertNotificationData } from "../services/notification.service";
 
 export const insertCustomer = async (req: AuthorizedRequest, res: Response) => {
     try {
@@ -78,9 +79,22 @@ export const createCustomerPayment = async (req: AuthorizedRequest, res: Respons
     const bodyData = req?.body;
     try {
         const userData = await getUserById(userId);
+        const customerData = await getCustomerById(bodyData?.customerId);
         if (!userData) return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
 
         await createCustomerPaymentData({...bodyData, userId, ownerId: userData?.ownerId});
+
+        // Notification for customer payment creation
+        const data = {
+            ownerId: userData?.ownerId ?? '',
+            userId: userId,
+            type: "payment" as "payment",
+            name: 'Payment Received',
+            description: `Payment of ${bodyData?.amount} has been made by ${customerData?.name ?? 'Unknown Customer'}.`,
+            link: `/customers/${bodyData?.customerId}`,
+        };
+        await insertNotificationData(data);
+
         return res.status(StatusCodes.OK).json({ success: true, message: 'Customer payment created successfully' });
     } catch (error) {
         console.error('Error creating customer payment:', error);

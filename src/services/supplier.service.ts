@@ -194,3 +194,13 @@ export const deleteSupplierPaymentData = async (_id: string) => {
         throw error;
     }
 }
+
+export const getSupplierById = async (_id: string) => {
+    try {
+        const result = await Supplier?.findById(_id);
+        return result?.toObject();
+    } catch (error) {
+        console.error('Error fetching supplier by ID:', error);
+        throw error;
+    }
+}

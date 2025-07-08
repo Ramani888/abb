@@ -2,7 +2,8 @@ import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
-import { createSupplierPaymentData, deleteSupplierData, deleteSupplierPaymentData, getSupplierData, getSupplierDetailOrderData, getSupplierPaymentData, insertSupplierData, updateSupplierData, updateSupplierPaymentData } from "../services/supplier.service";
+import { createSupplierPaymentData, deleteSupplierData, deleteSupplierPaymentData, getSupplierById, getSupplierData, getSupplierDetailOrderData, getSupplierPaymentData, insertSupplierData, updateSupplierData, updateSupplierPaymentData } from "../services/supplier.service";
+import { insertNotificationData } from "../services/notification.service";
 
 export const addSupplier = async (req: AuthorizedRequest, res: Response) => {
     try {
@@ -77,9 +78,22 @@ export const createSupplierPayment = async (req: AuthorizedRequest, res: Respons
     const bodyData = req?.body;
     try {
         const userData = await getUserById(userId);
+        const supplierData = await getSupplierById(bodyData?.supplierId);
         if (!userData) return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
 
         await createSupplierPaymentData({...bodyData, userId, ownerId: userData?.ownerId});
+
+        // Notification for supplier payment creation
+        const data = {
+            ownerId: userData?.ownerId ?? '',
+            userId: userId,
+            type: "payment" as "payment",
+            name: 'Payment Outlay',
+            description: `Payment outlay of ${bodyData?.amount} has been made for ${supplierData?.name ?? 'Unknown Supplier'}.`,
+            link: `/suppliers/${bodyData?.supplierId}`,
+        };
+        await insertNotificationData(data);
+
         return res.status(StatusCodes.OK).json({ success: true, message: 'Supplier payment created successfully' });
     } catch (error) {
         console.error('Error creating supplier payment:', error);

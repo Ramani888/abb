@@ -5,6 +5,7 @@ import { getUserById } from "../services/user.service";
 import { createOrderData, deleteOrderData, getAllOrderDataByCustomerId, getOrderById, getOrderData, updateOrderData } from "../services/order.service";
 import { generateInvoiceNumber } from "../utils/helpers/general";
 import { addProductVariantQuantity, getProductVariantData, logStockChange, subtractProductVariantQuantity } from "../services/product.service";
+import { insertNotificationData } from "../services/notification.service";
 
 export const createOrder = async (req: AuthorizedRequest, res: Response) => {
     const { userId } = req.user;
@@ -55,7 +56,7 @@ export const createOrder = async (req: AuthorizedRequest, res: Response) => {
             }
 
 
-            await createOrderData({
+            const newOrder = await createOrderData({
                 ...bodyData,
                 ownerId: userData?.ownerId,
                 userId: userId,
@@ -71,6 +72,17 @@ export const createOrder = async (req: AuthorizedRequest, res: Response) => {
                     })
                 );
             }
+
+            //Notification for order creation
+            const data = {
+                ownerId: userData?.ownerId ?? '',
+                userId: userId,
+                type: "order" as "order",
+                name: 'New Sales Order Created',
+                description: `Order ${invoiceNumber} has been placed by ${userData?.name ?? 'Unknown User'}.`,
+                link: `/orders/${newOrder?._id?.toString()}`,
+            }
+            await insertNotificationData(data)
     
             return res.status(StatusCodes.OK).json({ success: true, message: 'Order created successfully' });
         }

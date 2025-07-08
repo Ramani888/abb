@@ -6,7 +6,7 @@ export const createOrderData = async (data: IOrder) => {
     try {
         const newData = new Order(data);
         await newData.save();
-        return;
+        return newData;
     } catch (error) {
         console.error('Error creating order data:', error);
         throw error;

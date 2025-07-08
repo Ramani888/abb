@@ -95,6 +95,15 @@ export const getCustomerByNumberAndOwnerId = async (number: number, ownerId: str
     }
 }
 
+export const getCustomerById = async (_id: string) => {
+    try {
+        const result = await Customer?.findById(_id);
+        return result?.toObject();
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const updateCustomerData = async (data: ICustomer) => {
     try {
         const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
