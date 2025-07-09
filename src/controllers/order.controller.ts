@@ -83,6 +83,29 @@ export const createOrder = async (req: AuthorizedRequest, res: Response) => {
                 link: `/orders/${newOrder?._id?.toString()}`,
             }
             await insertNotificationData(data)
+
+            //Notification for low stock and out of stock
+            // so first we need latest data after order creation so not use bodydata products
+            if (bodyData?.products && Array.isArray(bodyData.products)) {
+                await Promise.all(
+                    bodyData.products.map(async (item: any) => {
+                        const productData = await getProductVariantData(item?.productId, item?.variantId);
+                        const currentStock = productData?.variants?.[0]?.quantity ?? 0;
+                        const minStockLevel = productData?.variants?.[0]?.minStockLevel ?? 0;
+                        if (currentStock < minStockLevel) {
+                            const stockNotificationData = {
+                                ownerId: userData?.ownerId ?? '',
+                                userId: userId,
+                                type: "stock" as "stock",
+                                name: currentStock === 0 ? 'Out of Stock Alert' : 'Low Stock Alert',
+                                description: `Product ${productData?.name} ${productData?.variants?.[0]?.packingSize} is running low on stock. Current stock is ${currentStock}.`,
+                                link: `/products`,
+                            }
+                            await insertNotificationData(stockNotificationData)
+                        }
+                    })
+                );
+            }
     
             return res.status(StatusCodes.OK).json({ success: true, message: 'Order created successfully' });
         }
