@@ -27,6 +27,26 @@ const SupplierPaymentSchema = new Schema({
         type: String,
         required: true,
     },
+    cardNumber: {
+        type: String,
+        required: false,
+    },
+    upiTransactionId: {
+        type: String,
+        required: false,
+    },
+    chequeNumber: {
+        type: String,
+        required: false,
+    },
+    gatewayTransactionId: {
+        type: String,
+        required: false,
+    },
+    bankReferenceNumber: {
+        type: String,
+        required: false,
+    },
     captureDate: {
         type: Date,
         required: false,
