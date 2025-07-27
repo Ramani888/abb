@@ -37,7 +37,7 @@ const OrderSchema = new Schema({
     },
     paymentMethod: {
         type: String,
-        required: true,
+        required: false,
     },
     // Extra fields according to payment method
     cardNumber: {

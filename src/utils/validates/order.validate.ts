@@ -5,7 +5,7 @@ export const createOrderValidation = {
     totalGst: "required|numeric",
     roundOff: "required|numeric",
     total: "required|numeric",
-    paymentMethod: "required|string",
+    paymentMethod: "string",
     paymentStatus: "required|string",
     "products": "required|array",
     "products.*.productId": "required|string",
