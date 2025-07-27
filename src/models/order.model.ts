@@ -39,6 +39,27 @@ const OrderSchema = new Schema({
         type: String,
         required: true,
     },
+    // Extra fields according to payment method
+    cardNumber: {
+        type: String,
+        required: false,
+    },
+    upiTransactionId: {
+        type: String,
+        required: false,
+    },
+    chequeNumber: {
+        type: String,
+        required: false,
+    },
+    gatewayTransactionId: {
+        type: String,
+        required: false,
+    },
+    bankReferenceNumber: {
+        type: String,
+        required: false,
+    },
     paymentStatus: {
         type: String,
         required: true,

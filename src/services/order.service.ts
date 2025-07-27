@@ -105,7 +105,7 @@ export const getOrderData = async (ownerId: string) => {
                     }
                 }
             },
-            // Group back to orders with products array
+            // Group back to orders with products array and extra payment fields
             {
                 $group: {
                     _id: "$_id",
@@ -119,6 +119,12 @@ export const getOrderData = async (ownerId: string) => {
                     total: { $first: "$total" },
                     paymentMethod: { $first: "$paymentMethod" },
                     paymentStatus: { $first: "$paymentStatus" },
+                    // Add extra payment fields in group
+                    cardNumber: { $first: "$cardNumber" },
+                    upiTransactionId: { $first: "$upiTransactionId" },
+                    chequeNumber: { $first: "$chequeNumber" },
+                    gatewayTransactionId: { $first: "$gatewayTransactionId" },
+                    bankReferenceNumber: { $first: "$bankReferenceNumber" },
                     invoiceNumber: { $first: "$invoiceNumber" },
                     notes: { $first: "$notes" },
                     isDeleted: { $first: "$isDeleted" },
@@ -157,6 +163,12 @@ export const getOrderData = async (ownerId: string) => {
                     total: 1,
                     paymentMethod: 1,
                     paymentStatus: 1,
+                    // Project extra payment fields
+                    cardNumber: 1,
+                    upiTransactionId: 1,
+                    chequeNumber: 1,
+                    gatewayTransactionId: 1,
+                    bankReferenceNumber: 1,
                     products: 1,
                     invoiceNumber: 1,
                     notes: 1,
@@ -178,13 +190,49 @@ export const getOrderData = async (ownerId: string) => {
 export const updateOrderData = async (data: IOrder) => {
     try {
         const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
-        const result = await Order.findByIdAndUpdate(documentId, data, {
+
+        // List of mutually exclusive payment fields
+        const exclusiveFields = [
+            "cardNumber",
+            "upiTransactionId",
+            "chequeNumber",
+            "gatewayTransactionId",
+            "bankReferenceNumber"
+        ];
+
+        // Find which payment field is present in the update
+        const presentField = exclusiveFields.find(field => data[field as keyof IOrder]);
+
+        // Prepare $set and $unset objects
+        const setFields: any = {};
+        const unsetFields: any = {};
+
+        // Set the present field, unset the rest
+        exclusiveFields.forEach(field => {
+            if (field === presentField && data[field as keyof IOrder]) {
+                setFields[field] = data[field as keyof IOrder];
+            } else {
+                unsetFields[field] = "";
+            }
+        });
+
+        // Add other fields to $set
+        Object.keys(data).forEach(key => {
+            if (!exclusiveFields.includes(key) && key !== "_id") {
+                setFields[key] = data[key as keyof IOrder];
+            }
+        });
+
+        const updateObj: any = {};
+        if (Object.keys(setFields).length) updateObj.$set = setFields;
+        if (Object.keys(unsetFields).length) updateObj.$unset = unsetFields;
+
+        const result = await Order.findByIdAndUpdate(documentId, updateObj, {
             new: true,
             runValidators: true
         });
         return result;
     } catch (error) {
-        console.error('Error updating order:', error);
         throw error;
     }
 }
