@@ -193,7 +193,6 @@ export const updateSupplierPaymentData = async (data: ISupplierPayment) => {
 
         // Find which field is present in the update
         const presentField = exclusiveFields.find(field => data[field as keyof ISupplierPayment]);
-        console.log('Present field:', presentField);
 
         // Prepare $set and $unset objects
         const setFields: any = {};
@@ -218,10 +217,6 @@ export const updateSupplierPaymentData = async (data: ISupplierPayment) => {
         const updateObj: any = {};
         if (Object.keys(setFields).length) updateObj.$set = setFields;
         if (Object.keys(unsetFields).length) updateObj.$unset = unsetFields;
-
-        console.log('set fields:', setFields);
-        console.log('unset fields:', unsetFields);
-        console.log('Update object:', updateObj);
 
         const result = await SupplierPayment.findByIdAndUpdate(documentId, updateObj, {
             new: true,

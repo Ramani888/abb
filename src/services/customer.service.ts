@@ -172,6 +172,11 @@ export const getCustomerPaymentData = async (ownerId: string) => {
                     amount: 1,
                     paymentType: 1,
                     paymentMode: 1,
+                    cardNumber: 1,
+                    upiTransactionId: 1,
+                    chequeNumber: 1,
+                    gatewayTransactionId: 1,
+                    bankReferenceNumber: 1,
                     captureDate: 1,
                     isDeleted: 1,
                     customerData: "$customerData",
@@ -189,7 +194,44 @@ export const getCustomerPaymentData = async (ownerId: string) => {
 export const updateCustomerPaymentData = async (data: ICustomerPayment) => {
     try {
         const documentId = new mongoose.Types.ObjectId(data?._id?.toString());
-        const result = await CustomerPayment.findByIdAndUpdate(documentId, data, {
+
+        // List of mutually exclusive fields
+        const exclusiveFields = [
+            "cardNumber",
+            "upiTransactionId",
+            "chequeNumber",
+            "gatewayTransactionId",
+            "bankReferenceNumber"
+        ];
+
+        // Find which field is present in the update
+        const presentField = exclusiveFields.find(field => data[field as keyof ICustomerPayment]);
+
+        // Prepare $set and $unset objects
+        const setFields: any = {};
+        const unsetFields: any = {};
+
+        // Set the present field, unset the rest
+        exclusiveFields.forEach(field => {
+            if (field === presentField && data[field as keyof ICustomerPayment]) {
+                setFields[field] = data[field as keyof ICustomerPayment];
+            } else {
+                unsetFields[field] = "";
+            }
+        });
+
+        // Add other fields to $set
+        Object.keys(data).forEach(key => {
+            if (!exclusiveFields.includes(key) && key !== "_id") {
+                setFields[key] = data[key as keyof ICustomerPayment];
+            }
+        });
+
+        const updateObj: any = {};
+        if (Object.keys(setFields).length) updateObj.$set = setFields;
+        if (Object.keys(unsetFields).length) updateObj.$unset = unsetFields;
+
+        const result = await CustomerPayment.findByIdAndUpdate(documentId, updateObj, {
             new: true,
             runValidators: true
         });
