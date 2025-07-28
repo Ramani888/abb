@@ -107,7 +107,7 @@ export const createOrder = async (req: AuthorizedRequest, res: Response) => {
                 );
             }
     
-            return res.status(StatusCodes.OK).json({ success: true, message: 'Order created successfully' });
+            return res.status(StatusCodes.OK).json({ success: true, message: 'Order created successfully', data: newOrder });
         }
 
     } catch (error) {
