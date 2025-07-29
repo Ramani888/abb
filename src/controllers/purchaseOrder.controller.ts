@@ -77,7 +77,7 @@ export const createPurchaseOrder = async (req: AuthorizedRequest, res: Response)
         }
         await insertNotificationData(data)
 
-        return res.status(StatusCodes.OK).json({ success: true, message: 'Purchase order created successfully' });
+        return res.status(StatusCodes.OK).json({ success: true, message: 'Purchase order created successfully', data: newOrder });
     } catch (error) {
         console.error('Error creating purchase order:', error);
         return { status: StatusCodes.INTERNAL_SERVER_ERROR, message: 'Internal server error' };
