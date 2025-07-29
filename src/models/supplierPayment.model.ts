@@ -47,6 +47,10 @@ const SupplierPaymentSchema = new Schema({
         type: String,
         required: false,
     },
+    refOrderId: {
+        type: String,
+        required: false,
+    },
     captureDate: {
         type: Date,
         required: false,
