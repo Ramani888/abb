@@ -177,6 +177,7 @@ export const getCustomerPaymentData = async (ownerId: string) => {
                     chequeNumber: 1,
                     gatewayTransactionId: 1,
                     bankReferenceNumber: 1,
+                    refOrderId: 1,
                     captureDate: 1,
                     isDeleted: 1,
                     customerData: "$customerData",
