@@ -19,6 +19,8 @@ import { createPurchaseOrderValidation, deletePurchaseOrderValidation, getAllPur
 import { createPurchaseOrder, deletePurchaseOrder, getAllPurchaseOrderBySupplierId, getPurchaseOrder, updatePurchaseOrder } from "../controllers/purchaseOrder.controller";
 import { deleteNotification, getNotification, updateNotification } from "../controllers/notification.controller";
 import { deleteNotificationValidation, updateNotificationValidation } from "../utils/validates/notification.validate";
+import { deleteExpenseValidation, expenseValidation, updateExpenseValidation } from "../utils/validates/expense.validate";
+import { createExpense, deleteExpense, getExpense, updateExpense } from "../controllers/expense.controller";
 
 enum RouteSource {
     Body,
@@ -251,6 +253,23 @@ router.put('/notification', authenticateToken, validateBody(updateNotificationVa
 
 router.delete('/notification', authenticateToken, validateBody(deleteNotificationValidation, RouteSource?.Query), (req, res, next) => {
 	deleteNotification(req, res).catch(next);
+});
+
+// Expense
+router.post('/expense', authenticateToken, validateBody(expenseValidation), (req, res, next) => {
+	createExpense(req, res).catch(next);
+});
+
+router.get('/expense', authenticateToken, (req, res, next) => {
+	getExpense(req, res).catch(next);
+});
+
+router.put('/expense', authenticateToken, validateBody(updateExpenseValidation), (req, res, next) => {
+	updateExpense(req, res).catch(next);
+});
+
+router.delete('/expense', authenticateToken, validateBody(deleteExpenseValidation, RouteSource?.Query), (req, res, next) => {
+	deleteExpense(req, res).catch(next);
 });
 
 export default router;
