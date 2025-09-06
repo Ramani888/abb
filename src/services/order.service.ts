@@ -549,7 +549,7 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 borderColor: rgb(0, 0, 0),
             });
             
-            // Always use fixed table height for 15 rows, regardless of actual items count
+            // Always use fixed table height for 15 rows
             const tableHeight = FIXED_TABLE_HEIGHT;
             
             // Draw table background
@@ -698,6 +698,83 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 y: itemY,
                 size: fontSize,
                 font: timesRomanFont,
+                color: rgb(0, 0, 0),
+            });
+        };
+
+        // Add new function to draw total row
+        const drawTotalRow = (page: any, items: any[], tableInfo: any) => {
+            const fontSize = 10;
+            const totalY = tableInfo.startY - TABLE_HEADER_HEIGHT - (MAX_ITEMS * ITEM_HEIGHT) - 15;
+            
+            // Draw total row background
+            page.drawRectangle({
+                x: MARGIN_X + 10,
+                y: totalY - 5,
+                width: CONTENT_WIDTH - 20,
+                height: 25,
+                borderWidth: 1,
+                borderColor: rgb(0, 0, 0),
+                color: rgb(0.9, 0.9, 0.9), // Light gray background for total row
+            });
+            
+            // Add vertical borders for each column
+            for (let i = 0; i < tableInfo.columnPositions.length; i++) {
+                page.drawLine({
+                    start: { x: tableInfo.columnPositions[i], y: totalY + 20 },
+                    end: { x: tableInfo.columnPositions[i], y: totalY - 5 },
+                    thickness: 1,
+                    color: rgb(0, 0, 0),
+                });
+            }
+            
+            // Calculate column-specific totals
+            let totalQuantity = 0;
+            let totalAmount = 0;
+            let totalPrice = 0; // For average price calculation
+            
+            items.forEach(item => {
+                totalQuantity += item.quantity || 0;
+                totalAmount += item.total || 0;
+                totalPrice += (item.price || 0) * (item.quantity || 0);
+            });
+            
+            // Calculate average price (if needed)
+            const avgPrice = totalQuantity > 0 ? (totalPrice / totalQuantity) : 0;
+            
+            // Draw total row text
+            page.drawText("TOTAL", {
+                x: tableInfo.columnPositions[1] + 10,
+                y: totalY,
+                size: fontSize,
+                font: timesBoldFont,
+                color: rgb(0, 0, 0),
+            });
+            
+            // Draw the average price in Price column (optional)
+            page.drawText(formatCurrency(avgPrice), {
+                x: tableInfo.columnPositions[5] + 10,
+                y: totalY,
+                size: fontSize,
+                font: timesBoldFont,
+                color: rgb(0, 0, 0),
+            });
+            
+            // Draw quantity total
+            page.drawText(totalQuantity.toString(), {
+                x: tableInfo.columnPositions[6] + 10,
+                y: totalY,
+                size: fontSize,
+                font: timesBoldFont,
+                color: rgb(0, 0, 0),
+            });
+            
+            // Draw amount total
+            page.drawText(formatCurrency(totalAmount), {
+                x: tableInfo.columnPositions[7] + 10,
+                y: totalY,
+                size: fontSize,
+                font: timesBoldFont,
                 color: rgb(0, 0, 0),
             });
         };
@@ -856,8 +933,11 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
             drawItem(page, limitedItems[row], row, row, table);
         }
         
-        // Add footer
-        addPageFooter(page, table.startY - table.tableHeight - 20, true);
+        // Add total row at the bottom of the table
+        drawTotalRow(page, limitedItems, table);
+        
+        // Add footer (adjust position to account for total row)
+        addPageFooter(page, table.startY - table.tableHeight - 45, true);
         
         const pdfBytes = await pdfDoc.save();
         return pdfBytes;
