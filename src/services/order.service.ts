@@ -421,52 +421,57 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 color: rgb(0.95, 0.95, 0.95),
             });
             page.drawText('RETAIL INVOICE', {
-                x: PAGE_WIDTH / 2 - 50,
+                x: PAGE_WIDTH / 2 - 250,
                 y: PAGE_HEIGHT - 105,
                 size: 14,
                 font: timesBoldFont,
                 color: rgb(0, 0, 0),
             });
             page.drawText('SARTHI AGROTECH', {
-                x: PAGE_WIDTH / 2 - 100,
+                x: PAGE_WIDTH / 2 - 250,
                 y: PAGE_HEIGHT - 80,
                 size: 24,
                 font: timesBoldFont,
                 color: rgb(0, 0, 0),
             });
-            page.drawText(`Page ${pageNumber} of ${totalPages}`, {
-                x: PAGE_WIDTH - 150,
-                y: PAGE_HEIGHT - 80,
-                size: 10,
-                font: timesRomanFont,
-                color: rgb(0, 0, 0),
-            });
+
+            //company address set right side top corner
             const companyAddress = '123 Pharmacy Street, Medical District, City - 380001';
             const companyAddressWidth = timesRomanFont.widthOfTextAtSize(companyAddress, 10);
             page.drawText(companyAddress, {
-                x: PAGE_WIDTH / 2 - companyAddressWidth / 2,
-                y: PAGE_HEIGHT - 125,
+                x: PAGE_WIDTH - companyAddressWidth - 60,
+                y: PAGE_HEIGHT - 70,
                 size: 10,
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
-            page.drawText('Mobile: +91 9876543210', {
-                x: PAGE_WIDTH - 160,
-                y: PAGE_HEIGHT - 140,
+            // mobile number set below company address
+            const companyMobileNumber = 'Mobile: +91 9876543210';
+            const companyMobileNumberWidth = timesRomanFont.widthOfTextAtSize(companyMobileNumber, 10);
+
+            page.drawText(companyMobileNumber, {
+                x: PAGE_WIDTH - companyMobileNumberWidth - 60,
+                y: PAGE_HEIGHT - 85,
                 size: 10,
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
-            page.drawText('GST No: 24ABCDE1234F1Z5', {
-                x: MARGIN_X + 100,
-                y: PAGE_HEIGHT - 140,
+            // gst number set below mobile number
+            const companyGSTNumber = 'GST No: 24ABCDE1234F1Z5';
+            const companyGSTNumberWidth = timesRomanFont.widthOfTextAtSize(companyGSTNumber, 10);
+            page.drawText(companyGSTNumber, {
+                x: PAGE_WIDTH - companyGSTNumberWidth - 60,
+                y: PAGE_HEIGHT - 100,
                 size: 10,
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
-            page.drawText('Drug License: GJ-12345', {
-                x: MARGIN_X + 300,
-                y: PAGE_HEIGHT - 140,
+            // drug license set below gst number
+            const companyDrugLicense = 'Drug License: GJ-12345';
+            const companyDrugLicenseWidth = timesRomanFont.widthOfTextAtSize(companyDrugLicense, 10);
+            page.drawText(companyDrugLicense, {
+                x: PAGE_WIDTH - companyDrugLicenseWidth - 60,
+                y: PAGE_HEIGHT - 115,
                 size: 10,
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
@@ -522,7 +527,7 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
             });
             if (order.customerData?.mobile) {
                 page.drawText(`Mobile: ${order.customerData.mobile}`, {
-                    x: PAGE_WIDTH - 250,
+                    x: PAGE_WIDTH - 145,
                     y: PAGE_HEIGHT - 240,
                     size: 10,
                     font: timesRomanFont,
@@ -699,10 +704,10 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
 
         const addPageFooter = (page: any, yPosition: number, isLastPage: boolean) => {
             if (isLastPage) {
-                const footerY = 150;
+                const footerY = 170;
                 page.drawRectangle({
                     x: MARGIN_X + CONTENT_WIDTH - 170,
-                    y: footerY + 60,
+                    y: footerY + 90,
                     width: 160,
                     height: 25,
                     borderWidth: 1,
@@ -711,7 +716,7 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 });
                 page.drawText('Total:', {
                     x: MARGIN_X + CONTENT_WIDTH - 160,
-                    y: footerY + 67,
+                    y: footerY + 97,
                     size: 12,
                     font: timesBoldFont,
                     color: rgb(0, 0, 0),
@@ -719,7 +724,7 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 const finalTotal = order.total;
                 page.drawText(formatCurrency(finalTotal), {
                     x: MARGIN_X + CONTENT_WIDTH - 100,
-                    y: footerY + 67,
+                    y: footerY + 97,
                     size: 12,
                     font: timesBoldFont,
                     color: rgb(0, 0, 0),
@@ -727,7 +732,7 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 if (order.totalGst) {
                     page.drawRectangle({
                         x: MARGIN_X + CONTENT_WIDTH - 170,
-                        y: footerY + 30,
+                        y: footerY + 55,
                         width: 160,
                         height: 25,
                         borderWidth: 1,
@@ -736,14 +741,14 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                     });
                     page.drawText('GST:', {
                         x: MARGIN_X + CONTENT_WIDTH - 160,
-                        y: footerY + 37,
+                        y: footerY + 62,
                         size: 12,
                         font: timesBoldFont,
                         color: rgb(0, 0, 0),
                     });
                     page.drawText(formatCurrency(order.totalGst), {
                         x: MARGIN_X + CONTENT_WIDTH - 100,
-                        y: footerY + 37,
+                        y: footerY + 62,
                         size: 12,
                         font: timesBoldFont,
                         color: rgb(0, 0, 0),
@@ -752,14 +757,14 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 if (order.paymentMethod) {
                     page.drawText(`Payment Method: ${order.paymentMethod}`, {
                         x: MARGIN_X + 10,
-                        y: footerY + 67,
+                        y: footerY + 97,
                         size: 12,
                         font: timesRomanFont,
                         color: rgb(0, 0, 0),
                     });
                     page.drawText(`Payment Status: ${order.paymentStatus || 'Unknown'}`, {
                         x: MARGIN_X + 10,
-                        y: footerY + 47,
+                        y: footerY + 77,
                         size: 12,
                         font: timesRomanFont,
                         color: rgb(0, 0, 0),
