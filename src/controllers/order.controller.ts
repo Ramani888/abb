@@ -2,7 +2,7 @@ import { AuthorizedRequest } from "../types/user";
 import { StatusCodes } from "http-status-codes";
 import { Response } from 'express';
 import { getUserById } from "../services/user.service";
-import { createOrderData, deleteOrderData, getAllOrderDataByCustomerId, getOrderById, getOrderData, updateOrderData } from "../services/order.service";
+import { createOrderData, deleteOrderData, generateInvoicePdfBytes, generateSlipPdfBytes, getAllOrderDataByCustomerId, getOrderById, getOrderData, updateOrderData } from "../services/order.service";
 import { generateInvoiceNumber } from "../utils/helpers/general";
 import { addProductVariantQuantity, getProductVariantData, logStockChange, subtractProductVariantQuantity } from "../services/product.service";
 import { insertNotificationData } from "../services/notification.service";
@@ -294,6 +294,42 @@ export const getAllOrderByCustomerId = async (req: AuthorizedRequest, res: Respo
         return res.status(StatusCodes.OK).json({ success: true, data: orderData });
     } catch (error) {
         console.error('Error fetching orders by customer ID:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const generateInvoicePdf = async (req: AuthorizedRequest, res: Response) => {
+    try {
+        const pdfBytes = await generateInvoicePdfBytes();
+        
+        // Set proper headers for PDF download
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Length': pdfBytes.length,
+            'Content-Disposition': 'inline; filename="invoice.pdf"'
+        });
+        
+        return res.send(Buffer.from(pdfBytes));
+    } catch (error) {
+        console.error('Error generating invoice PDF:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const generateSlipPdf = async (req: AuthorizedRequest, res: Response) => {
+    try {
+        const pdfBytes = await generateSlipPdfBytes();
+
+        // Set proper headers for PDF download
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Length': pdfBytes.length,
+            'Content-Disposition': 'inline; filename="slip.pdf"'
+        });
+
+        return res.send(Buffer.from(pdfBytes));
+    } catch (error) {
+        console.error('Error generating slip PDF:', error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
     }
 }

@@ -12,7 +12,7 @@ import { deleteCategory, getActiveCategory, getCategory, insertCategory, updateC
 import { deleteProduct, getProduct, insertProduct, updateProduct } from "../controllers/product.controller";
 import { addProductValidation, deleteProductValidation, updateProductValidation } from "../utils/validates/product.validate";
 import { createOrderValidation, deleteOrderValidation, getAllOrderByCustomerIdValidation, updateOrderValidation } from "../utils/validates/order.validate";
-import { createOrder, deleteOrder, getAllOrderByCustomerId, getOrder, updateOrder } from "../controllers/order.controller";
+import { createOrder, deleteOrder, generateInvoicePdf, generateSlipPdf, getAllOrderByCustomerId, getOrder, updateOrder } from "../controllers/order.controller";
 import { addSupplierValidation, deleteSupplierPaymentValidation, deleteSupplierValidation, getSupplierDetailOrderValidation, supplierPaymentValidation, updateSupplierPaymentValidation, updateSupplierValidation } from "../utils/validates/supplier.validate";
 import { addSupplier, createSupplierPayment, deleteSupplier, deleteSupplierPayment, getSupplier, getSupplierDetailOrder, getSupplierPayment, updateSupplier, updateSupplierPayment } from "../controllers/supplier.controller";
 import { createPurchaseOrderValidation, deletePurchaseOrderValidation, getAllPurchaseOrderBySupplierIdValidation, updatePurchaseOrderValidation } from "../utils/validates/purchaseOrder.validate";
@@ -270,6 +270,15 @@ router.put('/expense', authenticateToken, validateBody(updateExpenseValidation),
 
 router.delete('/expense', authenticateToken, validateBody(deleteExpenseValidation, RouteSource?.Query), (req, res, next) => {
 	deleteExpense(req, res).catch(next);
+});
+
+//PDf Making Api (Legacy routes - keep for backward compatibility)
+router.get('/generate/invoice', authenticateToken, (req, res, next) => {
+	generateInvoicePdf(req, res).catch(next);
+});
+
+router.get('/generate/slip', authenticateToken, (req, res, next) => {
+	generateSlipPdf(req, res).catch(next);
 });
 
 export default router;
