@@ -21,7 +21,7 @@ import { deleteNotification, getNotification, updateNotification } from "../cont
 import { deleteNotificationValidation, updateNotificationValidation } from "../utils/validates/notification.validate";
 import { deleteExpenseValidation, expenseValidation, updateExpenseValidation } from "../utils/validates/expense.validate";
 import { createExpense, deleteExpense, getExpense, updateExpense } from "../controllers/expense.controller";
-import { generateRetailInvoicePdf, generateSlipPdf } from "../controllers/invoice.controller";
+import { generateRetailInvoicePdf, generateSlipPdf, generateWholesaleInvoicePdf } from "../controllers/invoice.controller";
 
 enum RouteSource {
     Body,
@@ -276,6 +276,10 @@ router.delete('/expense', authenticateToken, validateBody(deleteExpenseValidatio
 //PDf Making Api (Legacy routes - keep for backward compatibility)
 router.get('/generate/retail/invoice', authenticateToken, (req, res, next) => {
 	generateRetailInvoicePdf(req, res).catch(next);
+});
+
+router.get('/generate/wholesale/invoice', authenticateToken, (req, res, next) => {
+	generateWholesaleInvoicePdf(req, res).catch(next);
 });
 
 router.get('/generate/slip', authenticateToken, (req, res, next) => {
