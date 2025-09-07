@@ -402,9 +402,7 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 y: 50,
                 width: CONTENT_WIDTH,
                 height: PAGE_HEIGHT - 100,
-                color: rgb(1, 1, 1),
-                // borderWidth: 1,
-                // borderColor: rgb(0.5, 0.5, 0.5),
+                color: rgb(1, 1, 1)
             });
             
             // Green background for header section
@@ -414,8 +412,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 width: CONTENT_WIDTH,
                 height: 100,
                 color: greenBackground, // Dark green color
-                // borderWidth: 1,
-                // borderColor: rgb(0.5, 0.5, 0.5),
             });
             
             page.drawRectangle({
@@ -423,8 +419,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 140,
                 width: 80,
                 height: 80,
-                // borderWidth: 1,
-                // borderColor: rgb(0.7, 0.7, 0.7),
                 color: rgb(0.95, 0.95, 0.95),
             });
             
@@ -497,8 +491,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 width: CONTENT_WIDTH,
                 height: 50,
                 color: greenBackground, // Dark green color
-                // borderWidth: 1,
-                // borderColor: rgb(0.5, 0.5, 0.5),
             });
             
             page.drawText(`Invoice #: ${order.invoiceNumber || 'INV-2023-001'}`, {
@@ -568,8 +560,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 y: startY - tableHeight,
                 width: CONTENT_WIDTH - 20,
                 height: tableHeight - TABLE_HEADER_HEIGHT, // Reduce height to exclude header
-                // borderWidth: 1,
-                // borderColor: rgb(0, 0, 0),
                 color: rgb(0.95, 0.95, 0.95), // White background for table body
             });
             
@@ -580,8 +570,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 width: CONTENT_WIDTH - 20,
                 height: TABLE_HEADER_HEIGHT,
                 color: greenBackground, // Green background for header
-                // borderWidth: 1,
-                // borderColor: rgb(0, 0, 0),
             });
             
             // Column positions
@@ -734,8 +722,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                 y: totalY - 5,
                 width: CONTENT_WIDTH - 20,
                 height: 25,
-                // borderWidth: 1,
-                // borderColor: rgb(0, 0, 0),
                 color: greenBackground, // Light gray background for total row
             });
             
@@ -809,8 +795,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 90,
                         width: 160,
                         height: 25,
-                        // borderWidth: 1,
-                        // borderColor: rgb(0, 0, 0),
                         color: greenBackground,
                     });
                     page.drawText('GST:', {
@@ -834,8 +818,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 55,
                         width: 160,
                         height: 25,
-                        // borderWidth: 1,
-                        // borderColor: rgb(0, 0, 0),
                         color: greenBackground,
                     });
                     const finalTotal = order.total;
@@ -908,8 +890,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
                     y: 60,
                     width: CONTENT_WIDTH - 20,
                     height: 30,
-                    // borderWidth: 1,
-                    // borderColor: rgb(0, 0, 0),
                     color: greenBackground,
                 });
                 page.drawText(
@@ -940,8 +920,6 @@ export const generateInvoicePdfBytes = async (orderData?: any) => {
             y: 50,
             width: CONTENT_WIDTH,
             height: PAGE_HEIGHT - 100,
-            // borderWidth: 1,
-            // borderColor: rgb(0.5, 0.5, 0.5),
             color: rgb(1, 1, 1),
         });
         
