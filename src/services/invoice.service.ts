@@ -121,8 +121,9 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
         const FIXED_TABLE_HEIGHT = MAX_ITEMS * ITEM_HEIGHT + TABLE_HEADER_HEIGHT;
 
         // Define colors
-        const greenBackground = rgb(0.24, 0.35, 0.26); // Fixed: Dark green color (converted from 61,89,67)
+        const greenBackground = rgb(0.24, 0.35, 0.26); // Dark green color (converted from 61,89,67)
         const whiteText = rgb(1, 1, 1); // White text
+        const blackText = rgb(0, 0, 0); // Black text
 
         // Helper functions
         const createPageHeader = (page: any, pageNumber: number, totalPages: number) => {
@@ -140,7 +141,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 150,
                 width: CONTENT_WIDTH,
                 height: 100,
-                color: greenBackground, // Dark green color
+                color: whiteText, // Dark green color
             });
             
             page.drawRectangle({
@@ -156,7 +157,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 105,
                 size: 14,
                 font: timesBoldFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             page.drawText('SARTHI AGROTECH', {
@@ -164,7 +165,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 80,
                 size: 24,
                 font: timesBoldFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
 
             //company address set right side top corner
@@ -175,7 +176,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 70,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // mobile number set below company address
@@ -187,7 +188,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 85,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // gst number set below mobile number
@@ -198,7 +199,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 100,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // drug license set below gst number
@@ -209,7 +210,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 115,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // Invoice details and customer info
@@ -219,7 +220,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 250,
                 width: CONTENT_WIDTH,
                 height: 50,
-                color: greenBackground, // Dark green color
+                color: whiteText, // Dark green color
             });
             
             page.drawText(`Invoice #: ${order.invoiceNumber || 'INV-2023-001'}`, {
@@ -227,7 +228,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 170,
                 size: 12,
                 font: timesRomanFont,
-                color: rgb(0, 0, 0), // Black text for this section
+                color: blackText, // Black text for this section
             });
             
             const orderDate = order.captureDate ? new Date(order.captureDate).toLocaleDateString() : new Date().toLocaleDateString();
@@ -236,7 +237,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 190,
                 size: 12,
                 font: timesRomanFont,
-                color: rgb(0, 0, 0), // Black text for this section
+                color: blackText, // Black text for this section
             });
             
             page.drawText('Bill To:', {
@@ -244,7 +245,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 220,
                 size: 12,
                 font: timesBoldFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             page.drawText(`Name: ${order.customerData?.name || 'Customer Name'}`, {
@@ -252,7 +253,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 240,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             const customerAddress = order.customerData?.address || 'Customer Address';
@@ -263,7 +264,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 240,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             if (order.customerData?.mobile) {
@@ -272,7 +273,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                     y: PAGE_HEIGHT - 240,
                     size: 10,
                     font: timesRomanFont,
-                    color: whiteText, // White text
+                    color: blackText, // White text
                 });
             }
             
@@ -301,18 +302,17 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 color: greenBackground, // Green background for header
             });
             
-            // Column positions - redistributed to increase Rate and Amount widths
-            // and decrease Pack, Unit, Cartoon, and Qty widths
+            // Column positions - redistributed to increase widths after removing one column
+            // Adjusted to distribute space more evenly
             const columnPositions = [
                 MARGIN_X + 10,        // S.No
                 MARGIN_X + 50,        // Product
-                MARGIN_X + 190,       // Pack (decreased)
-                MARGIN_X + 250,       // Unit (decreased)
-                MARGIN_X + 300,       // Cartoon (decreased)
-                MARGIN_X + 370,       // Lot No
-                MARGIN_X + 430,       // Qty (decreased)
-                MARGIN_X + 510,       // Rate (increased)
-                MARGIN_X + 600,       // Amount (increased)
+                MARGIN_X + 230,       // Produce By (increased)
+                MARGIN_X + 320,       // Batch No. (increased)
+                MARGIN_X + 390,       // Packing (increased)
+                MARGIN_X + 480,       // Price (increased)
+                MARGIN_X + 550,       // Qty (increased)
+                MARGIN_X + 620,       // Amount (increased)
                 MARGIN_X + CONTENT_WIDTH - 10 // End edge
             ];
             
@@ -339,15 +339,14 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
             // Draw column headers with white text - adjusted positions for new column widths
             const headerY = startY - 15;
             const fontSize = 10;
-            page.drawText('S.No', { x: MARGIN_X + 25, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Product', { x: MARGIN_X + 100, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Pack', { x: MARGIN_X + 205, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Unit', { x: MARGIN_X + 265, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Cartoon', { x: MARGIN_X + 320, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Lot No.', { x: MARGIN_X + 385, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Qty', { x: MARGIN_X + 450, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Rate', { x: MARGIN_X + 545, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
-            page.drawText('Amount', { x: MARGIN_X + 635, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('S.No', { x: MARGIN_X + 20, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Product', { x: MARGIN_X + 60, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Produce By', { x: MARGIN_X + 240, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Batch No.', { x: MARGIN_X + 330, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Packing', { x: MARGIN_X + 400, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Price', { x: MARGIN_X + 490, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Qty', { x: MARGIN_X + 560, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('Amount', { x: MARGIN_X + 630, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
             
             return {
                 startY,
@@ -369,6 +368,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
             const price = item.price || 0;
             const quantity = item.quantity || 0;
             const itemTotal = item.total || (price * quantity);
+            
             page.drawText(itemNo.toString(), {
                 x: tableInfo.columnPositions[0] + 10,
                 y: itemY,
@@ -376,7 +376,9 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
-            const maxNameLength = 25;
+            
+            // Increased maximum lengths to take advantage of wider columns
+            const maxNameLength = 30;
             const displayName = itemName.length > maxNameLength
                 ? itemName.substring(0, maxNameLength) + '...'
                 : itemName;
@@ -387,7 +389,8 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
-            const maxMfgLength = 18;
+            
+            const maxMfgLength = 20;
             const displayMfg = manufacturer.length > maxMfgLength
                 ? manufacturer.substring(0, maxMfgLength) + '...'
                 : manufacturer;
@@ -398,6 +401,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
+            
             page.drawText(batchNo, {
                 x: tableInfo.columnPositions[3] + 10,
                 y: itemY,
@@ -405,6 +409,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
+            
             page.drawText(packingSize, {
                 x: tableInfo.columnPositions[4] + 10,
                 y: itemY,
@@ -412,6 +417,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
+            
             page.drawText(formatCurrency(price), {
                 x: tableInfo.columnPositions[5] + 10,
                 y: itemY,
@@ -419,6 +425,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
+            
             page.drawText(quantity.toString(), {
                 x: tableInfo.columnPositions[6] + 10,
                 y: itemY,
@@ -426,6 +433,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 font: timesRomanFont,
                 color: rgb(0, 0, 0),
             });
+            
             page.drawText(formatCurrency(itemTotal), {
                 x: tableInfo.columnPositions[7] + 10,
                 y: itemY,
@@ -435,7 +443,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
             });
         };
 
-        // Add new function to draw total row
+        // Adjust total row drawing to match the new column positions
         const drawTotalRow = (page: any, items: any[], tableInfo: any) => {
             const fontSize = 10;
             const totalY = tableInfo.startY - TABLE_HEADER_HEIGHT - (MAX_ITEMS * ITEM_HEIGHT) - 15;
@@ -448,16 +456,6 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                 height: 25,
                 color: greenBackground, // Light gray background for total row
             });
-            
-            // Add vertical borders for each column
-            // for (let i = 0; i < tableInfo.columnPositions.length; i++) {
-            //     page.drawLine({
-            //         start: { x: tableInfo.columnPositions[i], y: totalY + 20 },
-            //         end: { x: tableInfo.columnPositions[i], y: totalY - 5 },
-            //         thickness: 1,
-            //         color: rgb(0, 0, 0),
-            //     });
-            // }
             
             // Calculate column-specific totals
             let totalQuantity = 0;
@@ -519,21 +517,21 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 90,
                         width: 160,
                         height: 25,
-                        color: greenBackground,
+                        color: whiteText,
                     });
                     page.drawText('GST:', {
                         x: MARGIN_X + CONTENT_WIDTH - 160,
                         y: footerY + 97,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                     page.drawText(formatCurrency(order.totalGst), {
                         x: MARGIN_X + CONTENT_WIDTH - 100,
                         y: footerY + 97,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                 }
                 if (order.totalGst) {
@@ -542,7 +540,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 55,
                         width: 160,
                         height: 25,
-                        color: greenBackground,
+                        color: whiteText,
                     });
                     const finalTotal = order.total;
                     page.drawText('Total:', {
@@ -550,14 +548,14 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 62,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                     page.drawText(formatCurrency(finalTotal), {
                         x: MARGIN_X + CONTENT_WIDTH - 100,
                         y: footerY + 62,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                 }
                 if (order.paymentMethod) {
@@ -620,7 +618,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                     y: 60,
                     width: CONTENT_WIDTH - 20,
                     height: 30,
-                    color: greenBackground,
+                    color: whiteText,
                 });
                 page.drawText(
                     'Important: Goods once sold will not be taken back or exchanged. Subject to local jurisdiction.',
@@ -629,7 +627,7 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                         y: 70,
                         size: 9,
                         font: timesRomanFont,
-                        color: whiteText,
+                        color: blackText,
                     }
                 );
             }
@@ -764,8 +762,9 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
         const FIXED_TABLE_HEIGHT = MAX_ITEMS * ITEM_HEIGHT + TABLE_HEADER_HEIGHT;
 
         // Define colors
-        const greenBackground = rgb(0.24, 0.35, 0.26); // Fixed: Dark green color (converted from 61,89,67)
+        const greenBackground = rgb(0.24, 0.35, 0.26); // Dark green color (converted from 61,89,67)
         const whiteText = rgb(1, 1, 1); // White text
+        const blackText = rgb(0, 0, 0); // Black text
 
         // Helper functions
         const createPageHeader = (page: any, pageNumber: number, totalPages: number) => {
@@ -774,7 +773,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: 50,
                 width: CONTENT_WIDTH,
                 height: PAGE_HEIGHT - 100,
-                color: rgb(1, 1, 1)
+                color: whiteText
             });
             
             // Green background for header section
@@ -783,7 +782,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 150,
                 width: CONTENT_WIDTH,
                 height: 100,
-                color: greenBackground, // Dark green color
+                color: whiteText, // Dark green color
             });
             
             page.drawRectangle({
@@ -799,7 +798,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 105,
                 size: 14,
                 font: timesBoldFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             page.drawText('SARTHI AGROTECH', {
@@ -807,7 +806,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 80,
                 size: 24,
                 font: timesBoldFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
 
             //company address set right side top corner
@@ -818,7 +817,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 70,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // mobile number set below company address
@@ -830,7 +829,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 85,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // gst number set below mobile number
@@ -841,7 +840,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 100,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // drug license set below gst number
@@ -852,7 +851,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 115,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             // Invoice details and customer info
@@ -862,7 +861,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 250,
                 width: CONTENT_WIDTH,
                 height: 50,
-                color: greenBackground, // Dark green color
+                color: whiteText, // Dark green color
             });
             
             page.drawText(`Invoice #: ${order.invoiceNumber || 'INV-2023-001'}`, {
@@ -870,7 +869,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 170,
                 size: 12,
                 font: timesRomanFont,
-                color: rgb(0, 0, 0), // Black text for this section
+                color: blackText, // Black text for this section
             });
             
             const orderDate = order.captureDate ? new Date(order.captureDate).toLocaleDateString() : new Date().toLocaleDateString();
@@ -879,7 +878,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 190,
                 size: 12,
                 font: timesRomanFont,
-                color: rgb(0, 0, 0), // Black text for this section
+                color: blackText, // Black text for this section
             });
             
             page.drawText('Bill To:', {
@@ -887,7 +886,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 220,
                 size: 12,
                 font: timesBoldFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             page.drawText(`Name: ${order.customerData?.name || 'Customer Name'}`, {
@@ -895,7 +894,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 240,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             const customerAddress = order.customerData?.address || 'Customer Address';
@@ -906,7 +905,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                 y: PAGE_HEIGHT - 240,
                 size: 10,
                 font: timesRomanFont,
-                color: whiteText, // White text
+                color: blackText, // White text
             });
             
             if (order.customerData?.mobile) {
@@ -915,7 +914,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                     y: PAGE_HEIGHT - 240,
                     size: 10,
                     font: timesRomanFont,
-                    color: whiteText, // White text
+                    color: blackText, // White text
                 });
             }
             
@@ -982,7 +981,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
             // Draw column headers with white text - adjusted positions for new column widths
             const headerY = startY - 15;
             const fontSize = 10;
-            page.drawText('S.No', { x: MARGIN_X + 25, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
+            page.drawText('S.No', { x: MARGIN_X + 20, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
             page.drawText('Product', { x: MARGIN_X + 60, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
             page.drawText('Pack', { x: MARGIN_X + 200, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
             page.drawText('Unit', { x: MARGIN_X + 260, y: headerY, size: fontSize, font: timesBoldFont, color: whiteText });
@@ -1166,21 +1165,21 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 90,
                         width: 160,
                         height: 25,
-                        color: greenBackground,
+                        color: whiteText,
                     });
                     page.drawText('GST:', {
                         x: MARGIN_X + CONTENT_WIDTH - 160,
                         y: footerY + 97,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                     page.drawText(formatCurrency(order.totalGst), {
                         x: MARGIN_X + CONTENT_WIDTH - 100,
                         y: footerY + 97,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                 }
                 if (order.totalGst) {
@@ -1189,7 +1188,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 55,
                         width: 160,
                         height: 25,
-                        color: greenBackground,
+                        color: whiteText,
                     });
                     const finalTotal = order.total;
                     page.drawText('Total:', {
@@ -1197,14 +1196,14 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         y: footerY + 62,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                     page.drawText(formatCurrency(finalTotal), {
                         x: MARGIN_X + CONTENT_WIDTH - 100,
                         y: footerY + 62,
                         size: 12,
                         font: timesBoldFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                 }
                 if (order.paymentMethod) {
@@ -1230,7 +1229,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                     y: 25,
                     width: CONTENT_WIDTH - 20,
                     height: 85, // Increased height for two bank details
-                    color: greenBackground,
+                    color: whiteText,
                 });
 
                 // Bank details title
@@ -1239,7 +1238,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                     y: 90,
                     size: 12,
                     font: timesBoldFont,
-                    color: whiteText,
+                    color: blackText,
                 });
 
                 // First Bank Details
@@ -1252,7 +1251,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                     y: 70,
                     size: 9,
                     font: timesRomanFont,
-                    color: whiteText,
+                    color: blackText,
                 });
 
                 page.drawText(`A/C No: ${bank1AccountNumber}`, {
@@ -1260,7 +1259,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                     y: 55,
                     size: 9,
                     font: timesRomanFont,
-                    color: whiteText,
+                    color: blackText,
                 });
 
                 page.drawText(`IFSC Code: ${bank1IFSC}`, {
@@ -1268,7 +1267,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                     y: 40,
                     size: 9,
                     font: timesRomanFont,
-                    color: whiteText,
+                    color: blackText,
                 });
 
                 // Second Bank Details (if available)
@@ -1284,7 +1283,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         start: { x: MARGIN_X + (CONTENT_WIDTH - 20) / 2, y: 80 },
                         end: { x: MARGIN_X + (CONTENT_WIDTH - 20) / 2, y: 35 },
                         thickness: 1,
-                        color: whiteText,
+                        color: blackText,
                     });
 
                     page.drawText(`Bank Name: ${bank2Name}`, {
@@ -1292,7 +1291,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         y: 70,
                         size: 9,
                         font: timesRomanFont,
-                        color: whiteText,
+                        color: blackText,
                     });
 
                     page.drawText(`A/C No: ${bank2AccountNumber}`, {
@@ -1300,7 +1299,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         y: 55,
                         size: 9,
                         font: timesRomanFont,
-                        color: whiteText,
+                        color: blackText,
                     });
 
                     page.drawText(`IFSC Code: ${bank2IFSC}`, {
@@ -1308,7 +1307,7 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
                         y: 40,
                         size: 9,
                         font: timesRomanFont,
-                        color: whiteText,
+                        color: blackText,
                     });
                 }
 
