@@ -577,112 +577,6 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                     });
                 }
 
-                // Add bank details section in place of the import notice
-                page.drawRectangle({
-                    x: MARGIN_X + 10,
-                    y: 60,
-                    width: CONTENT_WIDTH - 20,
-                    height: 80, // Increased height for two bank details
-                    color: greenBackground,
-                });
-
-                // Bank details title
-                page.drawText('BANK DETAILS', {
-                    x: MARGIN_X + (CONTENT_WIDTH - 20) / 2 - 45,
-                    y: 130,
-                    size: 12,
-                    font: timesBoldFont,
-                    color: whiteText,
-                });
-
-                // First Bank Details
-                const bank1Name = order?.bankDetails?.bank1Name || 'STATE BANK OF INDIA';
-                const bank1AccountNumber = order?.bankDetails?.bank1AccountNumber || '1234567890123456';
-                const bank1IFSC = order?.bankDetails?.bank1IFSC || 'SBIN0001234';
-                const bank1AccountHolder = order?.bankDetails?.bank1AccountHolder || 'SARTHI AGROTECH';
-
-                page.drawText(`Bank Name: ${bank1Name}`, {
-                    x: MARGIN_X + 30,
-                    y: 110,
-                    size: 9,
-                    font: timesRomanFont,
-                    color: whiteText,
-                });
-
-                page.drawText(`A/C No: ${bank1AccountNumber}`, {
-                    x: MARGIN_X + 30,
-                    y: 95,
-                    size: 9,
-                    font: timesRomanFont,
-                    color: whiteText,
-                });
-
-                page.drawText(`IFSC Code: ${bank1IFSC}`, {
-                    x: MARGIN_X + 30,
-                    y: 80,
-                    size: 9,
-                    font: timesRomanFont,
-                    color: whiteText,
-                });
-
-                page.drawText(`A/C Holder: ${bank1AccountHolder}`, {
-                    x: MARGIN_X + 30,
-                    y: 65,
-                    size: 9,
-                    font: timesRomanFont,
-                    color: whiteText,
-                });
-
-                // Second Bank Details (if available)
-                const hasSecondBank = order?.bankDetails?.bank2Name || true; // Default to true for demo
-
-                if (hasSecondBank) {
-                    const bank2Name = order?.bankDetails?.bank2Name || 'HDFC BANK';
-                    const bank2AccountNumber = order?.bankDetails?.bank2AccountNumber || '50100987654321098';
-                    const bank2IFSC = order?.bankDetails?.bank2IFSC || 'HDFC0009876';
-                    const bank2AccountHolder = order?.bankDetails?.bank2AccountHolder || 'SARTHI AGROTECH';
-
-                    // Add vertical separator between bank details
-                    page.drawLine({
-                        start: { x: MARGIN_X + (CONTENT_WIDTH - 20) / 2, y: 125 },
-                        end: { x: MARGIN_X + (CONTENT_WIDTH - 20) / 2, y: 65 },
-                        thickness: 1,
-                        color: whiteText,
-                    });
-
-                    page.drawText(`Bank Name: ${bank2Name}`, {
-                        x: MARGIN_X + (CONTENT_WIDTH - 20) / 2 + 30,
-                        y: 110,
-                        size: 9,
-                        font: timesRomanFont,
-                        color: whiteText,
-                    });
-
-                    page.drawText(`A/C No: ${bank2AccountNumber}`, {
-                        x: MARGIN_X + (CONTENT_WIDTH - 20) / 2 + 30,
-                        y: 95,
-                        size: 9,
-                        font: timesRomanFont,
-                        color: whiteText,
-                    });
-
-                    page.drawText(`IFSC Code: ${bank2IFSC}`, {
-                        x: MARGIN_X + (CONTENT_WIDTH - 20) / 2 + 30,
-                        y: 80,
-                        size: 9,
-                        font: timesRomanFont,
-                        color: whiteText,
-                    });
-
-                    page.drawText(`A/C Holder: ${bank2AccountHolder}`, {
-                        x: MARGIN_X + (CONTENT_WIDTH - 20) / 2 + 30,
-                        y: 65,
-                        size: 9,
-                        font: timesRomanFont,
-                        color: whiteText,
-                    });
-                }
-
                 // Signatures section
                 page.drawText('Customer Signature:', {
                     x: MARGIN_X + 50,
@@ -721,6 +615,23 @@ export const generateRetailInvoicePdfBytes = async (orderData?: any) => {
                     font: timesRomanFont,
                     color: rgb(0, 0, 0),
                 });
+                page.drawRectangle({
+                    x: MARGIN_X + 10,
+                    y: 60,
+                    width: CONTENT_WIDTH - 20,
+                    height: 30,
+                    color: greenBackground,
+                });
+                page.drawText(
+                    'Important: Goods once sold will not be taken back or exchanged. Subject to local jurisdiction.',
+                    {
+                        x: MARGIN_X + 20,
+                        y: 70,
+                        size: 9,
+                        font: timesRomanFont,
+                        color: whiteText,
+                    }
+                );
             }
         };
 
@@ -1485,23 +1396,35 @@ export const generateWholesaleInvoicePdfBytes = async (orderData?: any) => {
     }
 }
 
-export const generateSlipPdfBytes = async (order?: any) => {
+export const generateSlipPdfBytes = async (orderData?: any) => {
     try {
-        const pdfDoc = await PDFDocument.create();
+        // Sample order data if none provided
+        const staticOrderData = {
+            _id: 'sample123456',
+            invoiceNumber: 'RCPT-2023-001',
+            captureDate: new Date().toISOString(),
+            total: 1500.00,
+            subTotal: 1271.19,
+            totalGst: 228.81,
+            roundOff: 0,
+            paymentMethod: 'Cash',
+            paymentStatus: 'Paid',
+            customerData: {
+                name: 'Sample Customer',
+                address: '123 Sample Street, Sample City - 380001',
+                mobile: '9876543210'
+            }
+        };
+
+        const order = orderData || staticOrderData;
         
-        // Use standard fonts for maximum compatibility
+        const pdfDoc = await PDFDocument.create();
         const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
         const timesBoldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
-        
-        // Create a smaller page for the slip (receipt format)
-        const page = pdfDoc.addPage([300, 550]); // Slightly taller to accommodate payment in words
-        
-        // Define currency format
-        const formatCurrency = (amount: number) => {
-            return `Rs. ${amount.toFixed(2)}`;
-        };
-        
-        // Function to convert number to words
+
+        const formatCurrency = (amount: number) => `Rs. ${amount.toFixed(2)}`;
+
+        // Function to convert number to words (Indian numbering system)
         const numberToWords = (num: number) => {
             const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
             const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -1525,199 +1448,232 @@ export const generateSlipPdfBytes = async (order?: any) => {
             
             return result;
         };
+
+        // Layout constants - smaller size for receipt/slip
+        const PAGE_WIDTH = 300;
+        const PAGE_HEIGHT = 550;
+        const MARGIN_X = 15;
+        const CONTENT_WIDTH = PAGE_WIDTH - (MARGIN_X * 2);
+
+        // Define colors - maintain consistent branding with invoices
+        const greenBackground = rgb(0.24, 0.35, 0.26); // Dark green color
+        const whiteText = rgb(1, 1, 1); // White text
         
-        // Add border around slip
+        // Create a page
+        const page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+        
+        // Draw page border
         page.drawRectangle({
             x: 5,
             y: 5,
-            width: 290,
-            height: 540,
+            width: PAGE_WIDTH - 10,
+            height: PAGE_HEIGHT - 10,
             borderWidth: 1,
             borderColor: rgb(0, 0, 0),
-            color: rgb(1, 1, 1), // White fill
+            color: rgb(1, 1, 1) // White fill
         });
         
-        // Header with store details
+        // Header with store name and logo area
+        page.drawRectangle({
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 45,
+            width: CONTENT_WIDTH,
+            height: 30,
+            color: greenBackground
+        });
+        
         page.drawText('SARTHI AGROTECH', {
-            x: 70,
-            y: 520,
+            x: 75,
+            y: PAGE_HEIGHT - 30,
             size: 14,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: whiteText
         });
         
+        // Store address and contact details
         page.drawText('123 Pharmacy Street, Medical District', {
-            x: 30,
-            y: 505,
+            x: 50,
+            y: PAGE_HEIGHT - 60,
             size: 8,
             font: timesRomanFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         page.drawText('City - 380001, Mobile: +91 9876543210', {
-            x: 30,
-            y: 495,
+            x: 50,
+            y: PAGE_HEIGHT - 72,
             size: 8,
             font: timesRomanFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         page.drawText('GST No: 24ABCDE1234F1Z5', {
-            x: 30,
-            y: 485,
+            x: 80,
+            y: PAGE_HEIGHT - 84,
             size: 8,
             font: timesRomanFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
-        // Receipt Title
-        page.drawText('CASH RECEIPT', {
+        // Receipt title
+        page.drawRectangle({
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 105,
+            width: CONTENT_WIDTH,
+            height: 20,
+            color: greenBackground
+        });
+        
+        page.drawText('PAYMENT RECEIPT', {
             x: 95,
-            y: 465,
+            y: PAGE_HEIGHT - 100,
             size: 12,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: whiteText
         });
         
-        // Draw horizontal separator
-        page.drawLine({
-            start: { x: 15, y: 455 },
-            end: { x: 285, y: 455 },
-            thickness: 1,
-            color: rgb(0, 0, 0),
-        });
+        // Receipt details section
+        const receiptNumber = order.invoiceNumber || 'RCPT-2023-001';
+        const receiptDate = order.captureDate ? new Date(order.captureDate).toLocaleDateString() : new Date().toLocaleDateString();
         
-        // Receipt details
-        const receiptNumber = order?.invoiceNumber || 'RCPT-2023-001';
-        const receiptDate = new Date().toLocaleDateString();
-        
-        page.drawText(`Receipt #: ${receiptNumber}`, {
-            x: 15,
-            y: 440,
-            size: 9,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
+        page.drawText(`Receipt No: ${receiptNumber}`, {
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 130,
+            size: 10,
+            font: timesBoldFont,
+            color: rgb(0, 0, 0)
         });
         
         page.drawText(`Date: ${receiptDate}`, {
-            x: 180,
-            y: 440,
-            size: 9,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
+            x: MARGIN_X + 150,
+            y: PAGE_HEIGHT - 130,
+            size: 10,
+            font: timesBoldFont,
+            color: rgb(0, 0, 0)
+        });
+        
+        // Horizontal line
+        page.drawLine({
+            start: { x: MARGIN_X, y: PAGE_HEIGHT - 140 },
+            end: { x: PAGE_WIDTH - MARGIN_X, y: PAGE_HEIGHT - 140 },
+            thickness: 1,
+            color: rgb(0, 0, 0)
         });
         
         // Customer details
-        const customerName = order?.customerData?.name || 'Walk-in Customer';
-        page.drawText(`Customer: ${customerName}`, {
-            x: 15,
-            y: 425,
-            size: 9,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
+        page.drawText('Received from:', {
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 160,
+            size: 10,
+            font: timesBoldFont,
+            color: rgb(0, 0, 0)
         });
         
-        if (order?.customerData?.mobile) {
+        const customerName = order.customerData?.name || 'Walk-in Customer';
+        page.drawText(customerName, {
+            x: MARGIN_X + 85,
+            y: PAGE_HEIGHT - 160,
+            size: 10,
+            font: timesRomanFont,
+            color: rgb(0, 0, 0)
+        });
+        
+        if (order.customerData?.mobile) {
             page.drawText(`Mobile: ${order.customerData.mobile}`, {
-                x: 15,
-                y: 410,
+                x: MARGIN_X,
+                y: PAGE_HEIGHT - 175,
                 size: 9,
                 font: timesRomanFont,
-                color: rgb(0, 0, 0),
+                color: rgb(0, 0, 0)
             });
         }
         
-        // Draw horizontal separator
+        if (order.customerData?.address) {
+            const addressLines = order.customerData.address.match(/.{1,40}/g) || [];
+            addressLines.forEach((line: string, index: number) => {
+                if (index < 2) { // Limit to 2 lines
+                    page.drawText(line, {
+                        x: MARGIN_X,
+                        y: PAGE_HEIGHT - 190 - (index * 12),
+                        size: 8,
+                        font: timesRomanFont,
+                        color: rgb(0, 0, 0)
+                    });
+                }
+            });
+        }
+        
+        // Horizontal line
         page.drawLine({
-            start: { x: 15, y: 400 },
-            end: { x: 285, y: 400 },
+            start: { x: MARGIN_X, y: PAGE_HEIGHT - 215 },
+            end: { x: PAGE_WIDTH - MARGIN_X, y: PAGE_HEIGHT - 215 },
             thickness: 1,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
-        // Calculate the total instead of showing individual items
-        let totalAmount = 0;
-        
-        if (order?.products && Array.isArray(order.products)) {
-            order.products.forEach((item: any) => {
-                totalAmount += item.total || (item.price * item.quantity);
-            });
-        } else {
-            // Sample data if no order provided
-            totalAmount = 1625.00; // Sample total based on the static items
-        }
-        
-        // Add GST if available
-        const gstAmount = order?.totalGst || (totalAmount * 0.18); // Sample 18% GST
-        const roundOff = order?.roundOff || 0;
-        
-        // Final total with GST and roundoff
-        const finalTotal = order?.total || (totalAmount + gstAmount + roundOff);
-        
-        // Draw the payment box
+        // Payment details box
         page.drawRectangle({
-            x: 15,
-            y: 305,
-            width: 270,
-            height: 85,
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 285,
+            width: CONTENT_WIDTH,
+            height: 60,
             borderWidth: 1,
             borderColor: rgb(0, 0, 0),
-            color: rgb(0.97, 0.97, 0.97), // Light gray background
+            color: rgb(0.97, 0.97, 0.97) // Light gray background
         });
         
-        // Display total payment
-        page.drawText('TOTAL PAYMENT:', {
-            x: 20,
-            y: 375,
+        // Payment amount in figures
+        page.drawText('Amount:', {
+            x: MARGIN_X + 5,
+            y: PAGE_HEIGHT - 235,
             size: 12,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
-        page.drawText(formatCurrency(finalTotal), {
-            x: 190,
-            y: 375,
+        const totalAmount = order.total || 1500.00;
+        page.drawText(formatCurrency(totalAmount), {
+            x: MARGIN_X + 145,
+            y: PAGE_HEIGHT - 235,
             size: 12,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         // Horizontal separator inside payment box
         page.drawLine({
-            start: { x: 15, y: 365 },
-            end: { x: 285, y: 365 },
+            start: { x: MARGIN_X, y: PAGE_HEIGHT - 245 },
+            end: { x: PAGE_WIDTH - MARGIN_X, y: PAGE_HEIGHT - 245 },
             thickness: 0.5,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
-        // Total in words
+        // Amount in words
         page.drawText('Amount in words:', {
-            x: 20,
-            y: 350,
+            x: MARGIN_X + 5,
+            y: PAGE_HEIGHT - 260,
             size: 9,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
-        // Convert amount to words
-        const amountInWords = numberToWords(finalTotal);
-        
-        // Split amount in words into multiple lines if needed
-        const maxLineLength = 45;
+        // Convert amount to words and handle wrapping
+        const amountInWords = numberToWords(totalAmount);
+        const maxLineLength = 40;
         let wordsRemaining = amountInWords;
         let currentLine = 0;
         
-        while (wordsRemaining.length > 0 && currentLine < 3) {
+        while (wordsRemaining.length > 0 && currentLine < 2) {
             const lineText = wordsRemaining.length > maxLineLength 
                 ? wordsRemaining.substring(0, maxLineLength) + '-' 
                 : wordsRemaining;
                 
             page.drawText(lineText, {
-                x: 20,
-                y: 335 - (currentLine * 15),
+                x: MARGIN_X + 5,
+                y: PAGE_HEIGHT - 275 - (currentLine * 15),
                 size: 8,
                 font: timesRomanFont,
-                color: rgb(0, 0, 0),
+                color: rgb(0, 0, 0)
             });
             
             if (wordsRemaining.length > maxLineLength) {
@@ -1729,86 +1685,150 @@ export const generateSlipPdfBytes = async (order?: any) => {
             currentLine++;
         }
         
-        // Payment method
-        const paymentMethod = order?.paymentMethod || 'Cash';
-        const paymentStatus = order?.paymentStatus || 'Paid';
-        
-        page.drawText(`Payment Method: ${paymentMethod}`, {
-            x: 15,
-            y: 280,
-            size: 9,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
+        // Payment method and status
+        page.drawText(`Payment Method: ${order.paymentMethod || 'Cash'}`, {
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 310,
+            size: 10,
+            font: timesBoldFont,
+            color: rgb(0, 0, 0)
         });
         
-        page.drawText(`Payment Status: ${paymentStatus}`, {
-            x: 15,
-            y: 265,
-            size: 9,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
+        page.drawText(`Payment Status: ${order.paymentStatus || 'Paid'}`, {
+            x: MARGIN_X + 150,
+            y: PAGE_HEIGHT - 310,
+            size: 10,
+            font: timesBoldFont,
+            color: rgb(0, 0, 0)
         });
         
-        // Add signature sections
+        // For section
+        if (order.orderType) {
+            page.drawText(`For: ${order.orderType}`, {
+                x: MARGIN_X,
+                y: PAGE_HEIGHT - 330,
+                size: 9,
+                font: timesRomanFont,
+                color: rgb(0, 0, 0)
+            });
+        }
+        
+        if (order.invoiceNumber && order.invoiceNumber !== receiptNumber) {
+            page.drawText(`Invoice Ref: ${order.invoiceNumber}`, {
+                x: MARGIN_X + 150,
+                y: PAGE_HEIGHT - 330,
+                size: 9,
+                font: timesRomanFont,
+                color: rgb(0, 0, 0)
+            });
+        }
+        
+        // Signature sections
         page.drawText('Customer Signature:', {
-            x: 15,
-            y: 210,
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 380,
             size: 9,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         // Line for signature
         page.drawLine({
-            start: { x: 15, y: 180 },
-            end: { x: 120, y: 180 },
+            start: { x: MARGIN_X, y: PAGE_HEIGHT - 410 },
+            end: { x: MARGIN_X + 100, y: PAGE_HEIGHT - 410 },
             thickness: 0.5,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         page.drawText('Authorized Signature:', {
-            x: 170,
-            y: 210,
+            x: MARGIN_X + 130,
+            y: PAGE_HEIGHT - 380,
             size: 9,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         // Line for signature
         page.drawLine({
-            start: { x: 170, y: 180 },
-            end: { x: 275, y: 180 },
+            start: { x: MARGIN_X + 130, y: PAGE_HEIGHT - 410 },
+            end: { x: MARGIN_X + 230, y: PAGE_HEIGHT - 410 },
             thickness: 0.5,
-            color: rgb(0, 0, 0),
+            color: rgb(0, 0, 0)
         });
         
         // Thank you note
-        page.drawText('Thank you for your purchase!', {
+        page.drawRectangle({
+            x: MARGIN_X,
+            y: PAGE_HEIGHT - 440,
+            width: CONTENT_WIDTH,
+            height: 20,
+            color: greenBackground
+        });
+        
+        page.drawText('Thank you for your business!', {
             x: 75,
-            y: 140,
+            y: PAGE_HEIGHT - 435,
             size: 10,
             font: timesBoldFont,
-            color: rgb(0, 0, 0),
+            color: whiteText
         });
         
-        page.drawText('Visit us again soon.', {
-            x: 100,
-            y: 125,
-            size: 8,
-            font: timesRomanFont,
-            color: rgb(0, 0, 0),
+        // Bank details in footer - simplified version
+        page.drawRectangle({
+            x: MARGIN_X,
+            y: MARGIN_X,
+            width: CONTENT_WIDTH,
+            height: 60,
+            color: greenBackground
         });
         
-        // Footer
-        page.drawText('Goods once sold will not be taken back.', {
-            x: 60,
-            y: 30,
+        // Bank details title
+        page.drawText('BANK DETAILS', {
+            x: 110,
+            y: 65,
+            size: 9,
+            font: timesBoldFont,
+            color: whiteText
+        });
+        
+        // First Bank Details
+        const bank1Name = order?.bankDetails?.bank1Name || 'STATE BANK OF INDIA';
+        const bank1AccountNumber = order?.bankDetails?.bank1AccountNumber || '1234567890123456';
+        const bank1IFSC = order?.bankDetails?.bank1IFSC || 'SBIN0001234';
+        
+        page.drawText(`${bank1Name} | A/C: ${bank1AccountNumber} | IFSC: ${bank1IFSC}`, {
+            x: MARGIN_X + 5,
+            y: 50,
             size: 7,
             font: timesRomanFont,
-            color: rgb(0, 0, 0),
+            color: whiteText
         });
         
-        // Save the PDF
+        // Second Bank if available
+        const hasSecondBank = order?.bankDetails?.bank2Name || true; // Default to true for demo
+        
+        if (hasSecondBank) {
+            const bank2Name = order?.bankDetails?.bank2Name || 'HDFC BANK';
+            const bank2AccountNumber = order?.bankDetails?.bank2AccountNumber || '50100987654321098';
+            const bank2IFSC = order?.bankDetails?.bank2IFSC || 'HDFC0009876';
+            
+            page.drawText(`${bank2Name} | A/C: ${bank2AccountNumber} | IFSC: ${bank2IFSC}`, {
+                x: MARGIN_X + 5,
+                y: 35,
+                size: 7,
+                font: timesRomanFont,
+                color: whiteText
+            });
+        }
+        
+        page.drawText('This is a computer-generated receipt and does not require a signature.', {
+            x: 20,
+            y: 20,
+            size: 6,
+            font: timesRomanFont,
+            color: whiteText
+        });
+        
         const pdfBytes = await pdfDoc.save();
         return pdfBytes;
     } catch (error) {
